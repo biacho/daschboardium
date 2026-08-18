@@ -11,7 +11,7 @@ Zegar, kalendarz, wydarzenia z iCal, pogoda, status internetu i domen. Działa t
 Potrzebujesz PHP 8.1+ (php-fpm, `curl`, `openssl`), nginx i Composera.
 
 ```bash
-git clone https://github.com/<konto>/dashbordium.git
+git clone https://github.com/biacho/dashbordium.git
 cd dashbordium
 composer install
 php install.php
