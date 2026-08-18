@@ -1,0 +1,104 @@
+  /* ---------- WEATHER PANEL ---------- */
+  /* align-items: stretch (nie center) - zawartosc ma wypelniac cala szerokosc
+     kafelka, a nie zwezac sie do szerokosci samego tekstu */
+  .weather-main {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 0;   /* bez tego flex nie pozwala zawartosci sie sciesnic */
+  }
+
+  .weather-icon {
+    font-size: clamp(34px, 4.2vw, 56px);
+    padding: 0 .2em;
+  }
+
+  /* Kafelek pogody dzieli dolny wiersz z domenami - temperatura musi byc na tyle
+     mala, zeby ikona + temperatura + statystyki zmiescily sie bez przyciecia */
+  .weather-temp {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(34px, 4.8vw, 64px);
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* Ikona przy lewej krawedzi, temperatura przy prawej - blok idzie na cala szerokosc */
+  .weather-current-temp {
+    display: flex;
+    gap: 1em;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Blok siedzi przy prawej krawedzi kafelka, wiec i tekst rownamy do prawej */
+  .weather-primary { text-align: right; }
+
+  .weather-sub {
+    color: var(--text-muted);
+    font-size: clamp(14px, 1.6vw, 19px);
+    margin-top: 6px;
+  }
+
+  /* Dodatkowe statystyki - widoczne gdy panel jest szeroki (2 kafelki) */
+  /* 1fr zamiast auto - cztery statystyki rozkladaja sie rowno na cala szerokosc */
+  .weather-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 20px;
+    align-content: center;
+    width: 100%;
+  }
+  .weather-stat { display: flex; flex-direction: column; gap: 2px; }
+  .weather-stat .k {
+    font-size: clamp(10px, 1vw, 12px);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .weather-stat .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(14px, 1.6vw, 20px);
+    font-weight: 700;
+    color: var(--text);
+  }
+  /* Waski/pionowy ekran: statystyki pod spodem, bez wypychania w prawo */
+  @media (max-aspect-ratio: 1/1) {
+    .weather-stats { margin-left: 0; margin-top: 14px; }
+  }
+
+  @media (min-aspect-ratio: 11/10) and (max-width: 959px) and (min-width: 640px) and (min-height: 520px) {
+    .weather-main {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: clamp(12px, 2vw, 28px);
+    }
+    .weather-current-temp { width: auto; flex: 0 1 auto; }
+    .weather-stats {
+      margin-top: 0;
+      flex: 1;
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  @media (max-width: 639px), (max-height: 519px) {
+    .weather-panel { min-height: 200px; }
+  }
+  @media (min-width: 1600px) and (min-aspect-ratio: 16/9) and (max-height: 960px) {
+    .weather-main {
+      flex-direction: row;
+      align-items: center;
+      gap: clamp(16px, 2vw, 32px);
+    }
+    .weather-current-temp { width: auto; flex: 0 1 auto; }
+    .weather-stats {
+      flex: 1;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 0;
+    }
+  }
+

@@ -1,0 +1,70 @@
+  /* ---------- NET STATUS PANEL (poziomy pasek) ---------- */
+  .net-panel {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(10px, 2.34vmin, 18px);
+    padding: clamp(8px, 1.56vmin, 12px) clamp(12px, 3.13vmin, 24px);
+    transition: background 0.4s ease;
+  }
+  .net-panel .panel-label { margin-bottom: 0; }
+  .net-panel.connected { background: var(--net-ok-bg); }
+  .net-panel.disconnected { background: var(--net-err-bg); }
+
+  .net-status-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 0;
+  }
+
+  .net-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .net-dot.connected { background: var(--accent-cyan); box-shadow: 0 0 0 0 rgba(79,209,197,0.6); animation: pulse-cyan 2s infinite; }
+  .net-dot.disconnected { background: var(--accent-red); box-shadow: 0 0 0 0 rgba(251,106,106,0.6); animation: pulse-red 1.2s infinite; }
+
+  @keyframes pulse-cyan {
+    0%   { box-shadow: 0 0 0 0 rgba(79,209,197,0.5); }
+    70%  { box-shadow: 0 0 0 14px rgba(79,209,197,0); }
+    100% { box-shadow: 0 0 0 0 rgba(79,209,197,0); }
+  }
+  @keyframes pulse-red {
+    0%   { box-shadow: 0 0 0 0 rgba(251,106,106,0.6); }
+    70%  { box-shadow: 0 0 0 14px rgba(251,106,106,0); }
+    100% { box-shadow: 0 0 0 0 rgba(251,106,106,0); }
+  }
+
+  .net-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: clamp(18px, 2.2vw, 28px);
+  }
+  .net-label.connected { color: var(--accent-cyan); }
+  .net-label.disconnected { color: var(--accent-red); }
+
+  .net-detail {
+    margin-left: auto;
+    font-size: clamp(12px, 1.3vw, 16px);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .net-down-since {
+    margin-top: 0;
+    font-size: clamp(13px, 1.4vw, 17px);
+    color: var(--accent-red);
+    font-weight: 600;
+  }
+
+  @media (max-width: 639px), (max-height: 519px) {
+    .net-panel { flex-wrap: wrap; row-gap: 6px; }
+    .net-detail { margin-left: 0; }
+  }
+  @media (max-width: 480px) {
+    .net-detail { display: none; }
+  }
+

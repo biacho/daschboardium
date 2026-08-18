@@ -1,0 +1,209 @@
+  /* ---------- USAGE PANEL (limity Claude + Grok) ---------- */
+  .usage-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--panel-border) transparent;
+  }
+  .usage-main::-webkit-scrollbar { width: 6px; }
+  .usage-main::-webkit-scrollbar-thumb {
+    background: var(--panel-border);
+    border-radius: 99px;
+  }
+
+  /* Dwie karty w kafelku: lewa belka + lekki wash koloru grupy
+     (ten sam jezyk co pasek wydarzenia / krawedz domeny). */
+  .usage-group {
+    --group-accent: var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+    padding: 6px 10px 7px 12px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: var(--usage-claude-bg);
+    border: 1px solid var(--usage-claude-border);
+  }
+  .usage-group::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 99px;
+    background: var(--group-accent);
+  }
+  .usage-group.claude { --group-accent: var(--accent); }
+  .usage-group.grok {
+    --group-accent: var(--blue);
+    background: var(--usage-grok-bg);
+    border-color: var(--usage-grok-border);
+  }
+  /* Grok: tytul i pasek w jednym rzedzie, zeby Build/Chat/Imagine sie zmiescily */
+  .usage-group.grok .usage-limit {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .usage-group.grok .usage-limit-head {
+    flex: 0 0 4.8em;
+    margin: 0;
+  }
+  .usage-group.grok .usage-bar { flex: 1; min-width: 0; }
+
+  .usage-group-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .usage-group-label {
+    font-size: clamp(9px, 0.9vw, 11px);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    font-weight: 700;
+  }
+  .usage-group.grok .usage-group-label { color: var(--blue-text); }
+
+  .usage-group.grok .usage-bar-fill { background: var(--blue); }
+  .usage-group.grok .usage-limit.low .usage-bar-pct { color: var(--blue-text); }
+  .usage-group.grok .usage-limit.warn  .usage-bar-fill { background: var(--amber); }
+  .usage-group.grok .usage-limit.error .usage-bar-fill { background: var(--warn); }
+  .usage-group.grok .usage-limit.warn.low  .usage-bar-pct { color: var(--amber); }
+  .usage-group.grok .usage-limit.error.low .usage-bar-pct { color: var(--warn); }
+
+  .usage-limit { display: flex; flex-direction: column; gap: 5px; }
+
+  .usage-limit-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .usage-limit-title {
+    font-size: clamp(10px, 1vw, 12px);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .usage-limit-reset {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(11px, 1.2vw, 15px);
+    font-weight: 500;
+    color: var(--text);
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+
+  /* Kapsula: liczba zawsze w srodku paska. Przy niskim % wypelnienie
+     to cienka kreska pod tekstem (nie nachodzi na cyfry); od ~18%
+     zapelnia cala wysokosc i liczba przechodzi na ciemny kontrast
+     jak .cal-day.today. */
+  .usage-bar {
+    position: relative;
+    height: clamp(20px, 2.2vw, 26px);
+    border-radius: 99px;
+    background: var(--usage-track);
+    overflow: hidden;
+  }
+  .usage-bar-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--used, 0%);
+    border-radius: 99px;
+    background: var(--accent);
+    transition: width 0.6s ease, height 0.3s ease, inset 0.3s ease;
+  }
+  .usage-limit.low .usage-bar::after {
+    content: '';
+    position: absolute;
+    left: 3.6em;
+    right: 10px;
+    top: 50%;
+    height: 6px;
+    transform: translateY(-50%);
+    border-radius: 99px;
+    background: var(--usage-track-low);
+  }
+  .usage-limit.low .usage-bar-fill {
+    top: 50%;
+    bottom: auto;
+    left: 3.6em;
+    height: 6px;
+    transform: translateY(-50%);
+    width: calc((100% - 3.6em - 10px) * var(--used-n, 0) / 100);
+    z-index: 1;
+  }
+  .usage-bar-pct {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(13px, 1.4vw, 16px);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--on-accent);
+  }
+  .usage-limit.low .usage-bar-pct { color: var(--accent-text); }
+  .usage-limit.warn  .usage-bar-fill { background: var(--amber); }
+  .usage-limit.error .usage-bar-fill { background: var(--warn); }
+  .usage-limit.warn.low  .usage-bar-pct { color: var(--amber); }
+  .usage-limit.error.low .usage-bar-pct { color: var(--warn); }
+
+  .usage-sub {
+    color: var(--text-muted);
+    font-size: clamp(11px, 1.1vw, 14px);
+  }
+  .usage-products {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(10px, 1vw, 12px);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .usage-updated {
+    margin-top: auto;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(9px, 0.9vw, 11px);
+    color: var(--text-muted);
+  }
+  /* Snapshot starszy niz 30 min - cron prawdopodobnie nie chodzi */
+  .usage-updated:empty { display: none; }
+  .usage-updated.stale { color: var(--amber); font-weight: 600; }
+
+  @media (max-aspect-ratio: 11/10) and (min-width: 640px) and (min-height: 520px) {
+    .usage-group { padding: 5px 8px 6px 10px; gap: 4px; }
+    .usage-panel .panel-label { margin-bottom: 6px; }
+    .usage-updated { display: none; }
+    .usage-bar { height: 18px; }
+    .usage-group.grok .usage-limit { gap: 3px; }
+  }
+  @media (min-aspect-ratio: 11/10) and (max-width: 959px) and (min-width: 640px) and (min-height: 520px) {
+    .usage-group { padding: 4px 8px 5px 10px; gap: 3px; }
+    .usage-updated { display: none; }
+  }
+  @media (min-aspect-ratio: 11/10) and (min-width: 900px) and (max-height: 700px) {
+    .usage-panel .panel-label { margin-bottom: 6px; }
+    .usage-group { padding: 5px 8px 6px 10px; gap: 4px; }
+  }
+

@@ -1,0 +1,284 @@
+  /* ---------- CLOCK PANEL ---------- */
+  /* Trzy tarcze: godziny / minuty / sekundy. Cyfry w srodku, pierscien
+     jak dawny sekundnik. Tarcze kurczą się, gdy pod spodem siedzą przyciski
+     pomodoro - iPad olewa cqh na tym kafelku. */
+  .clock-panel {
+    justify-content: space-between;
+    padding: clamp(6px, 1.3vmin, 10px) clamp(8px, 1.82vmin, 14px) clamp(5px, 1.04vmin, 8px);
+    gap: clamp(6px, 1.04vmin, 8px);
+  }
+
+  .clock-face {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 8px;
+    min-height: 0;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .clock-dial {
+    position: relative;
+    width: var(--clock-dial);
+    height: var(--clock-dial);
+    flex: 0 1 var(--clock-dial);
+  }
+
+  .pomodoro-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .pomodoro-label {
+    font-size: clamp(10px, 1.43vmin, 12px);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .pomodoro-btns {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .pomodoro-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(11px, 1.56vmin, 13px);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    padding: clamp(6px, 1.04vmin, 8px) clamp(8px, 1.56vmin, 12px);
+    min-height: clamp(28px, 4.17vmin, 34px);
+    min-width: clamp(48px, 8.33vmin, 64px);
+    border-radius: 99px;
+    border: 1px solid var(--panel-border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  .pomodoro-btn:active {
+    color: var(--accent-text);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .clock-dial svg { display: block; width: 100%; height: 100%; }
+  .clock-ring-track,
+  .clock-ring-prog {
+    fill: none;
+    stroke-width: 2.1;
+  }
+  .clock-ring-track { stroke: var(--usage-track-low); }
+  .clock-ring-prog {
+    stroke: var(--accent);
+    stroke-linecap: round;
+    stroke-dasharray: 106.814;
+    stroke-dashoffset: 106.814;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .clock-dial-num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: calc(var(--clock-dial) * 0.27);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .clock-colon {
+    flex: 0 0 auto;
+    align-self: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: calc(var(--clock-dial) * 0.32);
+    line-height: 0.8;
+    letter-spacing: 0;
+    color: var(--accent);
+    margin-top: -0.08em;
+    user-select: none;
+    animation: clock-colon-blink 1s ease-in-out infinite;
+  }
+  @keyframes clock-colon-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.12; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .clock-colon { animation: none; opacity: 1; }
+  }
+
+  @media (max-aspect-ratio: 11/10) and (min-width: 640px) and (min-height: 520px) {
+    .clock-panel {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--kiosk-gap);
+    }
+    .clock-face { justify-content: flex-start; gap: clamp(8px, 2vmin, 18px); }
+    .pomodoro-bar { flex-direction: column; align-items: flex-end; gap: 8px; }
+  }
+  @media (min-aspect-ratio: 11/10) and (max-width: 959px) and (min-width: 640px) and (min-height: 520px) {
+    .clock-panel {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+    .pomodoro-bar { flex-direction: column; align-items: flex-end; gap: 6px; }
+  }
+  @media (max-width: 639px), (max-height: 519px) {
+    .clock-panel { min-height: 148px; }
+  }
+  /* ---------- POMODORO (modal nad kioskiem) ---------- */
+  .pomodoro-overlay {
+    --pomo-shadow-out:
+      0 10px 28px rgba(0, 0, 0, 0.40),
+      0 2px 8px rgba(0, 0, 0, 0.22);
+    --pomo-shadow-in:
+      inset 0 0 22px rgba(0, 0, 0, 0.42),
+      inset 0 3px 8px rgba(0, 0, 0, 0.22);
+    --pomo-ring-glow:
+      drop-shadow(0 0 0.7px rgba(255, 255, 255, 0.22))
+      drop-shadow(0 5px 12px rgba(0, 0, 0, 0.38));
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(10, 14, 20, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .pomodoro-overlay[hidden] { display: none; }
+  [data-theme="light"] .pomodoro-overlay {
+    --pomo-shadow-out:
+      0 12px 30px rgba(40, 28, 8, 0.20),
+      0 3px 10px rgba(40, 28, 8, 0.12);
+    --pomo-shadow-in:
+      inset 0 0 18px rgba(40, 28, 8, 0.18),
+      inset 0 2px 6px rgba(40, 28, 8, 0.12);
+    --pomo-ring-glow:
+      drop-shadow(0 0 0.6px rgba(255, 255, 255, 0.55))
+      drop-shadow(0 6px 14px rgba(40, 28, 8, 0.22));
+    background: rgba(239, 232, 220, 0.78);
+  }
+
+  .pomodoro-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .pomodoro-dial {
+    position: relative;
+    width: min(84vmin, 560px);
+    height: min(84vmin, 560px);
+  }
+  .pomodoro-dial::before {
+    content: '';
+    position: absolute;
+    inset: 2.2%;
+    border-radius: 50%;
+    box-shadow: var(--pomo-shadow-out);
+    pointer-events: none;
+  }
+  .pomodoro-dial svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    filter: var(--pomo-ring-glow);
+  }
+  .pomodoro-track,
+  .pomodoro-ring {
+    fill: none;
+    stroke-width: 1.35;
+  }
+  .pomodoro-track { stroke: var(--usage-track); }
+  .pomodoro-ring {
+    stroke: var(--accent);
+    stroke-linecap: butt;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  .pomodoro-overlay.done .pomodoro-ring {
+    stroke: var(--amber);
+  }
+
+  .pomodoro-core {
+    position: absolute;
+    inset: 7%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #3d6fa3;
+    box-shadow: var(--pomo-shadow-in);
+  }
+  .pomodoro-cup {
+    display: block;
+    width: 118%;
+    height: 118%;
+    margin: -9%;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+  .pomodoro-time {
+    position: absolute;
+    left: 50%;
+    bottom: 11%;
+    transform: translateX(-50%);
+    padding: 6px 14px;
+    border-radius: 99px;
+    background: rgba(10, 14, 20, 0.72);
+    color: #e6edf3;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: clamp(22px, 5vmin, 36px);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .pomodoro-overlay.done .pomodoro-time {
+    background: var(--amber);
+    color: var(--on-hot);
+  }
+
+  .pomodoro-stop {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 99px;
+    border: 1px solid var(--panel-border);
+    background: var(--fab-bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pomodoro-stop:active {
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .pomodoro-overlay.done .pomodoro-dial {
+    animation: pomodoro-done 1.1s ease-in-out infinite;
+  }
+  @keyframes pomodoro-done {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }

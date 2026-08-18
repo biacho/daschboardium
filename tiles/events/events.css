@@ -1,0 +1,85 @@
+  /* ---------- EVENTS PANEL ---------- */
+  .events-panel { padding: var(--panel-pad-y) var(--panel-pad-x); }
+  .events-panel .panel-label { margin-bottom: 8px; }
+
+  .events-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--panel-border) transparent;
+  }
+  .events-list::-webkit-scrollbar { width: 6px; }
+  .events-list::-webkit-scrollbar-thumb {
+    background: var(--panel-border);
+    border-radius: 99px;
+  }
+
+  .events-day-label {
+    font-size: clamp(11px, 1.1vw, 14px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+  .events-day-label:first-child { margin-top: 0; }
+  /* Nazwa dnia tygodnia ciut mniejsza od slowa "Jutro" */
+  .events-day-label .day-weekday { font-size: 0.85em; font-weight: 600; }
+
+  .event-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: var(--surface);
+    margin-bottom: 4px;
+  }
+
+  .event-bar {
+    width: 4px;
+    border-radius: 4px;
+    align-self: stretch;
+    background: var(--accent-cyan);
+    flex-shrink: 0;
+  }
+
+  .event-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .event-title {
+    font-size: clamp(13px, 1.4vw, 16px);
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .event-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(11px, 1.1vw, 13px);
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  .events-empty {
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 20px 0;
+  }
+
+  @media (max-width: 639px), (max-height: 519px) {
+    .events-panel { min-height: 220px; }
+  }
+  @media (min-aspect-ratio: 11/10) and (min-width: 900px) and (max-height: 700px) {
+    .events-panel .panel-label { margin-bottom: 6px; }
+  }
+

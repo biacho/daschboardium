@@ -1,0 +1,7 @@
+/config.php
+/cache_*.json
+/vendor/
+/.idea/
+/.claude/
+/s.jpeg
+/coffee_machine.gif
