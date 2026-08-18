@@ -1,6 +1,6 @@
   /* ---------- WEATHER PANEL ---------- */
   /* align-items: stretch (nie center) - zawartosc ma wypelniac cala szerokosc
-     kafelka, a nie zwezac sie do szerokosci samego tekstu */
+     modulu, a nie zwezac sie do szerokosci samego tekstu */
   .weather-main {
     display: flex;
     align-items: stretch;
@@ -34,7 +34,7 @@
     width: 100%;
   }
 
-  /* Blok siedzi przy prawej krawedzi kafelka, wiec i tekst rownamy do prawej */
+  /* Blok siedzi przy prawej krawedzi modulu, wiec i tekst rownamy do prawej */
   .weather-primary { text-align: right; }
 
   .weather-sub {
@@ -43,7 +43,7 @@
     margin-top: 6px;
   }
 
-  /* Dodatkowe statystyki - widoczne gdy panel jest szeroki (2 kafelki) */
+  /* Dodatkowe statystyki - widoczne gdy panel jest szeroki (2 moduly) */
   /* 1fr zamiast auto - cztery statystyki rozkladaja sie rowno na cala szerokosc */
   .weather-stats {
     display: grid;

@@ -32,7 +32,7 @@ function renderDomain(d) {
   }
 
   // Waznosc rejestracji domeny (dni) w nawiasie przy nazwie - sama liczba,
-  // zamiast osobnej plakietki; oszczedza caly rzad w kafelku
+  // zamiast osobnej plakietki; oszczedza caly rzad w module
   let expiry = '';
   if (d.domDays != null) {
     const state = d.domDays < 0 ? 'error' : (d.domDays < 30 ? 'warn' : 'ok');

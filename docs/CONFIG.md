@@ -20,13 +20,13 @@ niż plik w `var/`.
 | `api/get-events.php` | Scala kalendarze. |
 | `api/check-domains.php` | HTTP / DNS / SSL / RDAP. |
 
-Frontend nie czyta PHP — pogoda i widoczność kafelków idą przez `api/config-js.php`.
+Frontend nie czyta PHP — pogoda i widoczność modułów idą przez `api/config-js.php`.
 
 ---
 
 ## Pogoda
 
-Miasto to podpis kafelka. Współrzędne: przycisk **Szukaj** w modalu albo
+Miasto to podpis modułu. Współrzędne: przycisk **Szukaj** w modalu albo
 ręcznie z mapy (prawy klik → pierwsza liczba `LAT`, druga `LON`).
 
 ---
@@ -84,10 +84,10 @@ loginctl enable-linger "$USER"
 
 php-fpm nie czyta `~/.claude` / `~/.grok` (`700`/`600`) i nie powinien —
 tam są transkrypty i token OAuth. Do katalogu WWW idą wyłącznie liczby.
-Skrypt odmawia HTTP (403). W przykładzie kafelek jest wyłączony.
+Skrypt odmawia HTTP (403). W przykładzie moduł jest wyłączony.
 
 Tokenów **nie odświeżamy do katalogu WWW**. Endpointy usage bywają nieudokumentowane
-— przy awarii kafelek trzyma ostatnią wartość.
+— przy awarii moduł trzyma ostatnią wartość.
 
 ---
 

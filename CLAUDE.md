@@ -8,7 +8,7 @@ A zero-dependency kiosk dashboard intended to run fullscreen in an iPad's Safari
 (or as a home-screen web app). UI text is in Polish.
 
 The frontend is plain vanilla JS/CSS (no bundler). `index.php` is the shell:
-shared chrome in `assets/css/style.css` / `assets/js/scripts.js`, each tile in `tiles/<name>/<name>.{html,css,js}`.
+shared chrome in `assets/css/style.css` / `assets/js/scripts.js`, each module in `modules/<name>/<name>.{html,css,js}`.
 `index.php` includes the HTML fragments and links CSS/JS with a cache-busting
 timestamp. Entry is `index.php` (there is no `index.html`). There is
 a small PHP backend for two features only — pulling iCloud/iCal calendar events
@@ -23,13 +23,13 @@ the iOS standalone/kiosk use case. A floating `↻` refresh button (`#refreshBtn
 
 **Two fragility traps live here:**
 - *All modules run top-level and sequentially*, so one `getElementById(id)` returning
-  `null` (e.g. a panel element edited out / commented out in `tiles/<name>/<name>.html`) throws and
+  `null` (e.g. a panel element edited out / commented out in `modules/<name>/<name>.html`) throws and
   **kills every module after it** — the whole dashboard freezes. This actually
   happened when `#clockDate` was commented out and `updateClock` set `.textContent` on
   `null`. Guard DOM writes for optional elements (`const el = ...; if (el) el...`).
 - *nginx serves the static files with no `Cache-Control`* and iOS standalone caches
   `style.css`/`scripts.js` heuristically. To avoid serving stale assets during
-  development, `index.php` links `assets/css/style.css`, `assets/js/scripts.js` and `tiles/<name>/<name>.{css,js}` with a per-load timestamp. (A server-side alternative is `Cache-Control: no-store` on the dashboard nginx location.)
+  development, `index.php` links `assets/css/style.css`, `assets/js/scripts.js` and `modules/<name>/<name>.{css,js}` with a per-load timestamp. (A server-side alternative is `Cache-Control: no-store` on the dashboard nginx location.)
 
 ## Backend: iCloud calendar events
 
@@ -221,8 +221,8 @@ and the domain rows are deliberately compact. The whole thing collapses to one c
 
 ## Conventions
 
-- The frontend is `index.php` + `assets/` + `tiles/<kafelek>/`
-  (html, css, js; no bundler) — keep tiles in their own folders; don't re-inline.
+- The frontend is `index.php` + `assets/` + `modules/<moduł>/`
+  (html, css, js; no bundler) — keep modules in their own folders; don't re-inline.
   The PHP backend is deliberately minimal (calendar fetch only); don't grow it
   into a framework.
 - New files served out of this dir must be readable by the `http` user — `chmod 644`

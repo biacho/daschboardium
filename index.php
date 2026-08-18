@@ -1,13 +1,12 @@
 <?php
-// Szkielet kiosku: kafelki w tiles/<nazwa>/<nazwa>.{html,css,js}.
 require_once __DIR__ . '/lib/load-config.php';
 $dashboardConfig = dashboard_config();
 $needsInstall = ($dashboardConfig === null);
 $appVersion = dashboard_version();
 $v = (string) time();
-$tiles = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
-function tile($name) {
-    $path = __DIR__ . '/tiles/' . $name . '/' . $name . '.html';
+$modules = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
+function module($name) {
+    $path = __DIR__ . '/modules/' . $name . '/' . $name . '.html';
     if (is_file($path)) {
         include $path;
     }
@@ -38,8 +37,8 @@ function tile($name) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css?_=<?= $v ?>">
-<?php foreach ($tiles as $name): ?>
-<link rel="stylesheet" href="tiles/<?= htmlspecialchars($name, ENT_QUOTES) ?>/<?= htmlspecialchars($name, ENT_QUOTES) ?>.css?_=<?= $v ?>">
+<?php foreach ($modules as $name): ?>
+<link rel="stylesheet" href="modules/<?= htmlspecialchars($name, ENT_QUOTES) ?>/<?= htmlspecialchars($name, ENT_QUOTES) ?>.css?_=<?= $v ?>">
 <?php endforeach; ?>
 </head>
 <body>
@@ -65,19 +64,19 @@ function tile($name) {
 </div>
 
 <div class="kiosk">
-<?php tile('internet'); ?>
+<?php module('internet'); ?>
   <div class="col-left">
-<?php tile('usage'); ?>
-<?php tile('domains'); ?>
+<?php module('usage'); ?>
+<?php module('domains'); ?>
   </div>
   <div class="col-mid">
-<?php tile('calendar'); ?>
-<?php tile('weather'); ?>
+<?php module('calendar'); ?>
+<?php module('weather'); ?>
   </div>
   <div class="col-right">
-<?php tile('clock'); ?>
-<?php tile('events'); ?>
-<?php tile('countdown'); ?>
+<?php module('clock'); ?>
+<?php module('events'); ?>
+<?php module('countdown'); ?>
   </div>
 </div>
 
@@ -92,8 +91,8 @@ function tile($name) {
     <form class="config-form" id="configForm" autocomplete="off">
       <div class="config-body">
         <section class="config-section">
-          <h3 class="config-section-title">Kafelki</h3>
-          <p class="config-hint">Odznacz, żeby zdjąć kafelek z siatki. Sąsiedzi biorą jego miejsce.</p>
+          <h3 class="config-section-title">Moduły</h3>
+          <p class="config-hint">Odznacz, żeby zdjąć moduł z siatki. Sąsiedzi biorą jego miejsce.</p>
           <div class="config-checks" id="cfgPanels">
             <label class="config-check"><input type="checkbox" class="cfg-panel" value="internet" checked><span>Internet</span></label>
             <label class="config-check"><input type="checkbox" class="cfg-panel" value="clock" checked><span>Zegar</span></label>
@@ -108,7 +107,7 @@ function tile($name) {
 
         <section class="config-section">
           <h3 class="config-section-title">Pogoda</h3>
-          <p class="config-hint">Miasto to podpis kafelka. Współrzędne możesz wyszukać po nazwie.</p>
+          <p class="config-hint">Miasto to podpis modułu. Współrzędne możesz wyszukać po nazwie.</p>
           <div class="config-grid config-grid-city">
             <label class="config-field config-field-wide">
               <span>Miasto</span>
@@ -148,7 +147,7 @@ function tile($name) {
 
         <section class="config-section">
           <h3 class="config-section-title">Limity · Claude Code i Grok</h3>
-          <p class="config-hint">Zużycie nadal liczy konto. Tu włączasz Claude Code / Grok na kafelku i które produkty Groka widać.</p>
+          <p class="config-hint">Zużycie nadal liczy konto. Tu włączasz Claude Code / Grok na module i które produkty Groka widać.</p>
           <div class="config-checks">
             <label class="config-check">
               <input type="checkbox" id="cfgShowClaude">
@@ -252,7 +251,7 @@ function tile($name) {
 // countdown przed events: fetchEvents wola renderCountdown po odpowiedzi.
 $jsOrder = ['clock', 'calendar', 'weather', 'internet', 'countdown', 'events', 'domains', 'usage'];
 foreach ($jsOrder as $name) {
-    echo '<script src="tiles/' . htmlspecialchars($name, ENT_QUOTES) . '/' . htmlspecialchars($name, ENT_QUOTES) . '.js?_=' . $v . '"></script>' . "\n";
+    echo '<script src="modules/' . htmlspecialchars($name, ENT_QUOTES) . '/' . htmlspecialchars($name, ENT_QUOTES) . '.js?_=' . $v . '"></script>' . "\n";
 }
 ?>
 </body>

@@ -33,7 +33,7 @@ if (panelOn('clock')) {
   setInterval(updateClock, 1000);
 }
 
-/* Tarcze wypelniaja kafelek (iPad nie honoruje cqh). Fallback: --clock-dial w CSS. */
+/* Tarcze wypelniaja modul (iPad nie honoruje cqh). Fallback: --clock-dial w CSS. */
 (function fitClockDials() {
   if (!panelOn('clock')) return;
   const panel = document.querySelector('.clock-panel');

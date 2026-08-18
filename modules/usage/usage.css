@@ -16,7 +16,7 @@
     border-radius: 99px;
   }
 
-  /* Dwie karty w kafelku: lewa belka + lekki wash koloru grupy
+  /* Dwie karty w module: lewa belka + lekki wash koloru grupy
      (ten sam jezyk co pasek wydarzenia / krawedz domeny). */
   .usage-group {
     --group-accent: var(--accent);

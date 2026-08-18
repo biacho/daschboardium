@@ -14,7 +14,7 @@ function formatEventTime(ev) {
 }
 
 // Etykieta dnia: "Dzisiaj" / "Jutro (wtorek)" - z nazwa dnia tygodnia, bez daty
-// (data jest w kafelku Kalendarza obok). Lista i tak ograniczona po stronie PHP.
+// (data jest w module Kalendarza obok). Lista i tak ograniczona po stronie PHP.
 function dayLabel(date) {
   const today = new Date();
   const tomorrow = new Date();

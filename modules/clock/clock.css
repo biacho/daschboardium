@@ -1,7 +1,7 @@
   /* ---------- CLOCK PANEL ---------- */
   /* Trzy tarcze: godziny / minuty / sekundy. Cyfry w srodku, pierscien
      jak dawny sekundnik. Tarcze kurczą się, gdy pod spodem siedzą przyciski
-     pomodoro - iPad olewa cqh na tym kafelku. */
+     pomodoro - iPad olewa cqh na tym module. */
   .clock-panel {
     justify-content: space-between;
     padding: clamp(6px, 1.3vmin, 10px) clamp(8px, 1.82vmin, 14px) clamp(5px, 1.04vmin, 8px);

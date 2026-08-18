@@ -1,4 +1,4 @@
-/* ============== KAFELKI (wlacz / wylacz) ============== */
+/* ============== MODUŁY (wlacz / wylacz) ============== */
 const APP = window.APP_CONFIG || {};
 const PANEL_IDS = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
 
@@ -365,7 +365,7 @@ async function saveConfig(ev) {
   try {
     const payload = collectConfigForm();
     if (!Object.values(payload.panels).some(Boolean)) {
-      throw new Error('Zostaw przynajmniej jeden kafelek');
+      throw new Error('Zostaw przynajmniej jeden moduł');
     }
     const res = await fetch(CONFIG_SAVE, {
       method: 'POST',

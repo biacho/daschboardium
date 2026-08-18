@@ -199,7 +199,7 @@ foreach ($panelIds as $id) {
     }
 }
 if (!$anyPanel) {
-    fail(400, 'Zostaw przynajmniej jeden kafelek');
+    fail(400, 'Zostaw przynajmniej jeden moduł');
 }
 
 $existing = dashboard_config();

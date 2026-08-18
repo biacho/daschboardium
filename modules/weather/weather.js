@@ -1,4 +1,4 @@
-// Naglowek kafelka: "Pogoda · <miasto>"
+// Naglowek: "Pogoda · <miasto>"
 {
   const lbl = document.getElementById('weatherLabel');
   if (lbl) lbl.textContent = 'Pogoda · ' + WEATHER_CITY;

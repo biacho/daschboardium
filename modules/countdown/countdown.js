@@ -1,5 +1,5 @@
 /* ============== ODLICZANIE DO NAJBLIZSZEGO WYDARZENIA ============== */
-// Bierze te same eventy co kafelek listy. Preferuje wydarzenia z godzina
+// Bierze te same eventy co lista. Preferuje wydarzenia z godzina
 // (calodniowe tylko gdy nic timed nie zostalo), zeby "za 12 min" nie
 // ginelo za all-day od polnocy.
 function eventEndMs(ev) {

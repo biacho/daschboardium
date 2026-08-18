@@ -577,7 +577,7 @@ function runSnapshot(string $projectsDir, string $outFile, DateTimeZone $tz): st
     $grok = fetchGrokUsage($grokError);
 
     // API nie odpowiedzialo -> zostaw ostatnia znana wartosc ze starego snapshotu,
-    // zeby kafelek nie zgasl przy jednym nieudanym strzale. planError zostaje,
+    // zeby modul nie zgasl przy jednym nieudanym strzale. planError zostaje,
     // zeby frontend mogl pokazac DLACZEGO liczby sa stare (wczesniej znikal).
     $usedStalePlan = false;
     $usedStaleGrok = false;
@@ -705,7 +705,7 @@ function runSnapshot(string $projectsDir, string $outFile, DateTimeZone $tz): st
             $buckets[$name]['calls']++;
         }
 
-        // Rozbicie po modelach - tylko dla dzisiaj (to widac na kafelku)
+        // Rozbicie po modelach - tylko dla dzisiaj (to widac na module)
         if ($r['ts'] >= $todayStart) {
             $name = $r['model'];
             $models[$name] ??= ['total' => 0, 'cost' => 0.0];
