@@ -1,11 +1,11 @@
 # Konfiguracja dashboardu
 
-Ustawienia siedzą w **`config.php`** (poza gitem). W repo jest tylko
-`config.example.php`. Na świeżej instalacji: `php install.php`, potem modal
+Ustawienia siedzą w **`config/config.php`** (poza gitem). W repo jest tylko
+`config/config.example.php`. Na świeżej instalacji: `php install.php`, potem modal
 przy pierwszym otwarciu kiosku. Później — koło zębate albo `?config=1`.
 
 Po zapisie odśwież stronę. Cache unieważnia się, gdy `config.php` jest nowszy
-niż plik cache.
+niż plik w `var/`.
 
 ---
 
@@ -13,14 +13,14 @@ niż plik cache.
 
 | Plik | Rola |
 |------|------|
-| `config.php` | Magazyn (sekrety iCal + reszta). nginx zwraca 404. |
-| `config.example.php` | Szablon do `install.php`. |
-| `config-js.php` | Publiczna część do przeglądarki (`window.APP_CONFIG`). Nigdy iCal. |
-| `get-config.php` / `save-config.php` | Modal. iCal jest w odpowiedzi — tylko LAN. |
-| `get-events.php` | Scala kalendarze. |
-| `check-domains.php` | HTTP / DNS / SSL / RDAP. |
+| `config/config.php` | Magazyn (sekrety iCal + reszta). nginx zwraca 404. |
+| `config/config.example.php` | Szablon do `install.php`. |
+| `api/config-js.php` | Publiczna część do przeglądarki (`window.APP_CONFIG`). Nigdy iCal. |
+| `api/get-config.php` / `save-config.php` | Modal. iCal jest w odpowiedzi — tylko LAN. |
+| `api/get-events.php` | Scala kalendarze. |
+| `api/check-domains.php` | HTTP / DNS / SSL / RDAP. |
 
-Frontend nie czyta PHP — pogoda i widoczność kafelków idą przez `config-js.php`.
+Frontend nie czyta PHP — pogoda i widoczność kafelków idą przez `api/config-js.php`.
 
 ---
 
@@ -104,8 +104,7 @@ Tokenów **nie odświeżamy do katalogu WWW**. Endpointy usage bywają nieudokum
 
 ## Bezpieczeństwo
 
-- Nie wpisuj linków iCal do `config-js.php`.
-- `config.php`, `cache_*.json`, `install.php`, `usage-snapshot.php` — deny w nginx
-  (wzór: `deploy/nginx.conf.example`).
+- Nie wpisuj linków iCal do `api/config-js.php`.
+- `config/`, `var/`, `bin/`, `lib/` — deny w nginx (wzór: `deploy/nginx.conf.example`).
 - Pliki serwowane: `chmod 644` (czytelne dla usera `http`).
 - php-fpm nie tworzy plików — tylko nadpisuje istniejące `666`. Dlatego jest `install.php`.

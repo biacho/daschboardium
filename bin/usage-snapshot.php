@@ -29,8 +29,6 @@
  *   2. transkrypty zawieraja pelna tresc rozmow, a credentials token dostepowy -
  *      do katalogu www trafiaja wylacznie liczby, nigdy tresc ani sekrety,
  *   3. parsowanie kilkunastu MB JSONL przy kazdym odswiezeniu kiosku byloby drogie.
- *
- * Demon systemd user (patrz deploy/dashboard-usage.service.example).
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -38,11 +36,11 @@ if (PHP_SAPI !== 'cli') {
     exit("Ten skrypt uruchamia sie tylko z CLI.\n");
 }
 
-require_once __DIR__ . '/load-config.php';
+require_once dirname(__DIR__) . '/lib/load-config.php';
 $config = dashboard_config() ?? [];
 
 $projectsDir = $config['USAGE_PROJECTS_DIR'] ?? (getenv('HOME') . '/.claude/projects');
-$outFile     = __DIR__ . '/cache_usage.json';
+$outFile     = dashboard_cache_path('cache_usage.json');
 $tz          = new DateTimeZone('Europe/Warsaw');
 
 /**
@@ -584,8 +582,9 @@ function runSnapshot(string $projectsDir, string $outFile, DateTimeZone $tz): st
     $usedStalePlan = false;
     $usedStaleGrok = false;
     $old = null;
-    if (file_exists($outFile)) {
-        $old = json_decode((string) file_get_contents($outFile), true);
+    $oldRaw = dashboard_cache_read('cache_usage.json');
+    if ($oldRaw !== null) {
+        $old = json_decode($oldRaw, true);
     }
     if ($plan === null && is_array($old) && isset($old['plan']) && is_array($old['plan'])) {
         $plan = $old['plan'];
@@ -739,10 +738,10 @@ function runSnapshot(string $projectsDir, string $outFile, DateTimeZone $tz): st
         'generated'   => date('c'),
     ], JSON_UNESCAPED_UNICODE);
 
-    if (@file_put_contents($outFile, $json) === false) {
+    if (!dashboard_cache_write('cache_usage.json', $json)) {
         return 'BLAD: nie udalo sie zapisac ' . $outFile;
     }
-    @chmod($outFile, 0666);  // php-fpm (user http) musi moc nadpisac, gdyby zaszla potrzeba
+    @chmod($outFile, 0666);
 
     $notes = [];
     if ($usedStalePlan) {

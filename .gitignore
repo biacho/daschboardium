@@ -1,7 +1,6 @@
-/config.php
-/cache_*.json
+/config/config.php
+/var/cache_*
 /vendor/
 /.idea/
 /.claude/
-/s.jpeg
-/coffee_machine.gif
+/CLAUDE.md

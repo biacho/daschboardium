@@ -723,6 +723,13 @@
   }
   .config-status.error { color: var(--warn); font-weight: 600; }
   .config-status.ok { color: var(--accent-text); font-weight: 600; }
+  .config-ver {
+    flex-shrink: 0;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
   .config-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
   @media (max-width: 560px) {

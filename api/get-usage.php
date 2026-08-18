@@ -6,19 +6,22 @@
  * Dokłada informacje o wieku danych, zeby kiosk mogl pokazac, ze snapshot jest stary.
  */
 
+require_once dirname(__DIR__) . '/lib/load-config.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
-$snapshot = __DIR__ . '/cache_usage.json';
+$snapshot = dashboard_cache_path('cache_usage.json');
+$raw = dashboard_cache_read('cache_usage.json');
 
-if (!file_exists($snapshot)) {
+if ($raw === null) {
     echo json_encode([
         'error' => 'Brak snapshotu - uruchom usage-snapshot.php (cron).',
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$data = json_decode(file_get_contents($snapshot), true);
+$data = json_decode($raw, true);
 if (!is_array($data)) {
     echo json_encode(['error' => 'Uszkodzony snapshot.'], JSON_UNESCAPED_UNICODE);
     exit;

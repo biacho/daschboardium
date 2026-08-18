@@ -8,7 +8,7 @@ A zero-dependency kiosk dashboard intended to run fullscreen in an iPad's Safari
 (or as a home-screen web app). UI text is in Polish.
 
 The frontend is plain vanilla JS/CSS (no bundler). `index.php` is the shell:
-shared chrome in `style.css` / `scripts.js`, each tile in `tiles/<name>/<name>.{html,css,js}`.
+shared chrome in `assets/css/style.css` / `assets/js/scripts.js`, each tile in `tiles/<name>/<name>.{html,css,js}`.
 `index.php` includes the HTML fragments and links CSS/JS with a cache-busting
 timestamp. Entry is `index.php` (there is no `index.html`). There is
 a small PHP backend for two features only — pulling iCloud/iCal calendar events
@@ -29,7 +29,7 @@ the iOS standalone/kiosk use case. A floating `↻` refresh button (`#refreshBtn
   `null`. Guard DOM writes for optional elements (`const el = ...; if (el) el...`).
 - *nginx serves the static files with no `Cache-Control`* and iOS standalone caches
   `style.css`/`scripts.js` heuristically. To avoid serving stale assets during
-  development, `index.php` links `style.css`, `scripts.js` and `tiles/<name>/<name>.{css,js}` with a per-load timestamp. (A server-side alternative is `Cache-Control: no-store` on the dashboard nginx location.)
+  development, `index.php` links `assets/css/style.css`, `assets/js/scripts.js` and `tiles/<name>/<name>.{css,js}` with a per-load timestamp. (A server-side alternative is `Cache-Control: no-store` on the dashboard nginx location.)
 
 ## Backend: iCloud calendar events
 
@@ -42,8 +42,8 @@ Events are filtered to **today and tomorrow only** (computed in `Europe/Warsaw`)
 the sources are not hit on every kiosk refresh. A single failing calendar does not
 break the response (caught per-calendar via `\Throwable`); only if *every* calendar
 fails and produces nothing does it fall back to the stale cache (and it won't cache
-an all-error result). All config lives in `config.php` (gitignored; ship
-`config.example.php`). Scripts read it through `load-config.php` — missing file
+an all-error result). All config lives in `config/config.php` (gitignored; ship
+`config/config.example.php`). Scripts read it through `lib/load-config.php` — missing file
 returns JSON 503 instead of a fatal.
 
 - Microsoft/Outlook published calendars expose both a `.html` (web view) and a
@@ -92,9 +92,9 @@ invalidation as `cache_events.json` (a newer `config.php` busts the cache immedi
 
 ⚠️ **php-fpm (user `http`) cannot create files in this directory** — it can only
 overwrite ones that already exist and are `chmod 666`. `php install.php` (CLI, as
-the deploy user) creates `config.php` from the example plus empty cache files and
-chmods them. Without that, `file_put_contents` silently fails and every kiosk
-request pays the full ~1.5 s of network checks.
+the deploy user) creates `config/config.php` from the example plus empty `var/`
+cache files and chmods them. Without that, `file_put_contents` silently fails
+and every kiosk request pays the full ~1.5 s of network checks.
 
 ## Backend: Claude Code usage / plan limits
 
@@ -103,7 +103,7 @@ sources, both collected by **`usage-snapshot.php`, which runs as a long-lived PH
 daemon under the user's own systemd instance** — unit example
 `deploy/dashboard-usage.service.example`, `ExecStart=… --loop=60`,
 `Restart=always`, with `loginctl enable-linger $USER` so it survives reboot and
-logout. It writes `cache_usage.json`; `get-usage.php` only serves that file and adds
+logout. It writes `var/cache_usage.json`; `api/get-usage.php` only serves that file and adds
 `ageSeconds`/`stale` (stale after 10 min). Run it without `--loop` for a one-shot
 refresh. The daemon handles SIGTERM/SIGINT so `systemctl --user restart` is clean,
 and `emptyBucket()` **must stay outside `runSnapshot()`** — redeclaring a function on
@@ -140,27 +140,27 @@ and `usage-snapshot.php` refuses to run unless `PHP_SAPI === 'cli'` (403 over HT
 
 ### Config bridge to the frontend
 
-`config.php` is the single config file (PHP array — deliberately not `.env`, which
+`config/config.php` is the single config file (PHP array — deliberately not `.env`, which
 would need a parser this zero-framework project doesn't have). It is gitignored;
-`config.example.php` ships in the repo. `SETUP_COMPLETE === false` (or a missing
-`config.php`) forces the existing settings modal as first-run; a missing
+`config/config.example.php` ships in the repo. `SETUP_COMPLETE === false` (or a missing
+config file) forces the existing settings modal as first-run; a missing
 `SETUP_COMPLETE` key means an already-configured install. The static `scripts.js`
-can't read PHP, so `config-js.php` reads config server-side and echoes **only the
+can't read PHP, so `api/config-js.php` reads config server-side and echoes **only the
 public keys** (weather, panel flags, `setupComplete`) as `window.APP_CONFIG = {...}`
 with `Content-Type: application/javascript` + `Cache-Control: no-store`. `index.php`
-loads `<script src="config-js.php">` **before** `scripts.js`. ⚠️ Never echo
+loads `<script src="api/config-js.php">` **before** `assets/js/scripts.js`. ⚠️ Never echo
 `ICAL_URLS` (or anything secret) from `config-js.php` — it goes straight to the
-browser. `config-js.php` is intentionally *not* in the nginx deny list (unlike
-`config.php`), so it must stay secret-free. End-user how-to lives in `CONFIG.md`.
+browser. `api/config-js.php` is intentionally *not* in the nginx deny list (unlike
+`config/`), so it must stay secret-free. End-user how-to lives in `docs/CONFIG.md`.
 
 ## Deployment (nginx)
 
 LAN-only. Copy `deploy/nginx.conf.example` and adjust root / `server_name`.
 Isolation is `allow` RFC1918 + `deny all` — do **not** `listen` on a LAN IP
 (that splits nginx sockets and breaks other vhosts / HTTP-01). PHP via
-`fastcgi_pass unix:/run/php-fpm/php-fpm.sock`. Deny `config.php`,
-`config.example.php`, `cache_*.json`, `composer.*`, `vendor/`, `install.php`,
-`usage-snapshot.php`. Reload: `sudo nginx -t && sudo systemctl reload nginx`.
+`fastcgi_pass unix:/run/php-fpm/php-fpm.sock`. Deny `config/`, `var/`, `bin/`,
+`lib/`, `vendor/`, `composer.*`, `install.php`. Reload:
+`sudo nginx -t && sudo systemctl reload nginx`.
 
 ## Architecture
 
@@ -221,7 +221,7 @@ and the domain rows are deliberately compact. The whole thing collapses to one c
 
 ## Conventions
 
-- The frontend is `index.php` + `style.css` / `scripts.js` + `tiles/<kafelek>/`
+- The frontend is `index.php` + `assets/` + `tiles/<kafelek>/`
   (html, css, js; no bundler) — keep tiles in their own folders; don't re-inline.
   The PHP backend is deliberately minimal (calendar fetch only); don't grow it
   into a framework.

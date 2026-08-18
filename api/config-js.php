@@ -10,7 +10,7 @@
  * !!! NIE wypisuj tu ICAL_URLS ani niczego sekretnego - to leci wprost do przegladarki.
  */
 
-require_once __DIR__ . '/load-config.php';
+require_once dirname(__DIR__) . '/lib/load-config.php';
 
 header('Content-Type: application/javascript; charset=utf-8');
 header('Cache-Control: no-store'); // zawsze swieze, bez problemow z cache iOS
@@ -18,6 +18,7 @@ header('Cache-Control: no-store'); // zawsze swieze, bez problemow z cache iOS
 $config = dashboard_config();
 if ($config === null) {
     echo 'window.APP_CONFIG = ' . json_encode([
+        'version'       => dashboard_version(),
         'setupComplete' => false,
         'weatherLat'    => 51.1079,
         'weatherLon'    => 17.0385,
@@ -70,6 +71,7 @@ $public = [
     'pomodoro'      => $pomodoro,
     'panels'        => $panels,
     'setupComplete' => dashboard_setup_complete($config),
+    'version'       => dashboard_version(),
 ];
 
 echo 'window.APP_CONFIG = ' . json_encode($public, JSON_UNESCAPED_UNICODE) . ';';

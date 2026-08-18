@@ -1,6 +1,7 @@
 {
-    "name": "dashboardium/kiosk",
+    "name": "dashbordium/kiosk",
     "description": "LAN-only iPad kiosk dashboard (vanilla JS + small PHP backend)",
+    "version": "1.0.0-beta",
     "license": "MIT",
     "require": {
         "php": ">=8.1",

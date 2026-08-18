@@ -1,8 +1,9 @@
 <?php
 // Szkielet kiosku: kafelki w tiles/<nazwa>/<nazwa>.{html,css,js}.
-require_once __DIR__ . '/load-config.php';
+require_once __DIR__ . '/lib/load-config.php';
 $dashboardConfig = dashboard_config();
 $needsInstall = ($dashboardConfig === null);
+$appVersion = dashboard_version();
 $v = (string) time();
 $tiles = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
 function tile($name) {
@@ -20,7 +21,7 @@ function tile($name) {
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
-<title>Dashboardium</title>
+<title>Dashbordium</title>
 <script>
 (function () {
   try {
@@ -36,7 +37,7 @@ function tile($name) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?_=<?= $v ?>">
+<link rel="stylesheet" href="assets/css/style.css?_=<?= $v ?>">
 <?php foreach ($tiles as $name): ?>
 <link rel="stylesheet" href="tiles/<?= htmlspecialchars($name, ENT_QUOTES) ?>/<?= htmlspecialchars($name, ENT_QUOTES) ?>.css?_=<?= $v ?>">
 <?php endforeach; ?>
@@ -45,7 +46,7 @@ function tile($name) {
 <?php if ($needsInstall): ?>
 <div class="install-needed">
   <div class="install-card">
-    <p class="install-kicker">Dashboardium</p>
+    <p class="install-kicker">Dashbordium <?= htmlspecialchars($appVersion, ENT_QUOTES) ?></p>
     <h1 class="install-title">Brak konfiguracji</h1>
     <p class="install-copy">php-fpm nie umie utworzyć plików w tym katalogu. Na hoście, w katalogu projektu, odpal:</p>
     <pre class="install-cmd">php install.php</pre>
@@ -59,7 +60,7 @@ function tile($name) {
 <div class="loader" id="bootLoader">
   <div class="loader__shade loader__shade--top" aria-hidden="true"></div>
   <div class="loader__shade loader__shade--bottom" aria-hidden="true"></div>
-  <div class="loader__name">Dashboardium</div>
+  <div class="loader__name">Dashbordium</div>
   <div class="loader__bar"><i id="bootLoaderBar"></i></div>
 </div>
 
@@ -185,6 +186,7 @@ function tile($name) {
       </div>
       <footer class="config-foot">
         <p class="config-status" id="cfgStatus" role="status"></p>
+        <span class="config-ver"><?= htmlspecialchars($appVersion, ENT_QUOTES) ?></span>
         <div class="config-actions">
           <button type="button" class="config-btn ghost" id="configCancel">Anuluj</button>
           <button type="submit" class="config-btn primary" id="configSave">Zapisz</button>
@@ -203,7 +205,7 @@ function tile($name) {
           pathLength="100" transform="rotate(-90 20 20)"/>
       </svg>
       <div class="pomodoro-core">
-        <img class="pomodoro-cup" src="cup_of_coffee.gif" alt="" width="256" height="256">
+        <img class="pomodoro-cup" src="assets/img/cup_of_coffee.gif" alt="" width="256" height="256">
         <div class="pomodoro-time" id="pomodoroTime">10:00</div>
       </div>
     </div>
@@ -244,8 +246,8 @@ function tile($name) {
 </nav>
 
 
-<script src="config-js.php?_=<?= $v ?>"></script>
-<script src="scripts.js?_=<?= $v ?>"></script>
+<script src="api/config-js.php?_=<?= $v ?>"></script>
+<script src="assets/js/scripts.js?_=<?= $v ?>"></script>
 <?php
 // countdown przed events: fetchEvents wola renderCountdown po odpowiedzi.
 $jsOrder = ['clock', 'calendar', 'weather', 'internet', 'countdown', 'events', 'domains', 'usage'];

@@ -6,7 +6,7 @@
  * istniejacy plik (664, grupa http) - nie tworzy nowego.
  */
 
-require_once __DIR__ . '/load-config.php';
+require_once dirname(__DIR__) . '/lib/load-config.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -254,7 +254,7 @@ $php = "<?php\n"
     . "// URL-e iCal traktuj jak sekrety.\n\n"
     . 'return ' . phpExport($ordered) . ";\n";
 
-$path = __DIR__ . '/config.php';
+$path = dashboard_config_path();
 if (file_put_contents($path, $php, LOCK_EX) === false) {
     fail(500, 'Nie udało się zapisać config.php (sprawdź uprawnienia)');
 }

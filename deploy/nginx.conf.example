@@ -1,10 +1,5 @@
-# Dashboardium — tylko LAN. Nie wystawiaj na publiczny interfejs.
-#
-# Nie binduj listen do adresu LAN (np. listen 192.168.1.10:80). To tworzy osobny
-# socket; ruch z NAT-u (w tym HTTP-01 Let's Encrypt dla innych vhostów)
-# wpada wtedy tylko do bloków na tym adresie. Izolację robią allow/deny.
-#
-# Dostosuj: server_name, alias / SCRIPT_FILENAME, ewentualnie prefiks URL.
+# Nie binduj listen do adresu LAN — izolację robią allow/deny.
+# Dostosuj: server_name, alias, SCRIPT_FILENAME.
 
 server {
     listen 80;
@@ -21,7 +16,7 @@ server {
     }
 
     location /dashboard/ {
-        alias /var/www/dashboardium/;
+        alias /var/www/dashbordium/;
         index index.php;
 
         location ~ /\. {
@@ -31,18 +26,17 @@ server {
         }
     }
 
-    # Sekrety, cache, zależność, skrypty tylko-CLI
-    location ~ ^/dashboard/(config\.php|config\.example\.php|cache_[^/]+\.json|composer\.(json|lock)|vendor/|install\.php|usage-snapshot\.php) {
+    location ~ ^/dashboard/(config/|var/|bin/|lib/|vendor/|composer\.(json|lock)|install\.php) {
         deny all;
         return 404;
     }
 
     location ~ ^/dashboard/(.+\.php)$ {
-        alias /var/www/dashboardium/$1;
+        alias /var/www/dashbordium/$1;
         fastcgi_param HTTP_PROXY "";
         fastcgi_pass unix:/run/php-fpm/php-fpm.sock;
         fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME /var/www/dashboardium/$1;
+        fastcgi_param SCRIPT_FILENAME /var/www/dashbordium/$1;
         include fastcgi_params;
     }
 }

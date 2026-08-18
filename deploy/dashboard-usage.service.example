@@ -1,14 +1,10 @@
 [Unit]
-# Demon limitów Claude / Grok dla kafelka „Limity”.
-# Musi chodzić jako WŁAŚCICIEL ~/.claude i ~/.grok (php-fpm ich nie czyta).
-# Włącz linger, żeby przeżył wylogowanie: loginctl enable-linger $USER
-Description=Dashboardium — snapshot zużycia Claude / Grok
+Description=Dashbordium — snapshot zużycia Claude / Grok
 After=network-online.target
 
 [Service]
 Type=simple
-# Podmień ścieżkę na katalog instalacji:
-ExecStart=/usr/bin/php /var/www/dashboardium/usage-snapshot.php --loop=60
+ExecStart=/usr/bin/php /var/www/dashbordium/bin/usage-snapshot.php --loop=60
 Restart=always
 RestartSec=10
 StandardOutput=journal

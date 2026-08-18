@@ -1,7 +1,7 @@
 /* ============== ZUZYCIE TOKENOW (CLAUDE CODE) ============== */
 // Dane pochodza ze snapshotu robionego cronem przez usage-snapshot.php - php-fpm
 // nie ma dostepu do ~/.claude/projects (700), wiec tu leci tylko gotowa agregacja.
-const USAGE_ENDPOINT = 'get-usage.php';
+const USAGE_ENDPOINT = 'api/get-usage.php';
 
 // 1 234 -> "1,2 tys.", 5 633 837 -> "5,63 mln"
 function formatTokens(n) {

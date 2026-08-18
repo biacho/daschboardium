@@ -1,7 +1,7 @@
 /* ============== STATUS DOMEN ============== */
 // Backend (check-domains.php) sprawdza HTTP + DNS (A/MX/CAA przez DoH) + SSL + RDAP.
 // Tutaj tylko render - caly stan zbiorczy (ok/warn/error) liczy PHP.
-const DOMAINS_ENDPOINT = 'check-domains.php';
+const DOMAINS_ENDPOINT = 'api/check-domains.php';
 
 // Kropka statusu przy nazwie: zielona / bursztynowa / czerwona
 function domainBadge(label, state, value) {

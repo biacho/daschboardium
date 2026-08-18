@@ -9,7 +9,7 @@
 
 use ICal\ICal;
 
-require_once __DIR__ . '/load-config.php';
+require_once dirname(__DIR__) . '/lib/load-config.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -18,25 +18,27 @@ if ($config === null) {
     dashboard_fail_unconfigured();
 }
 
-if (!is_file(__DIR__ . '/vendor/autoload.php')) {
+if (!is_file(dashboard_vendor_autoload())) {
     http_response_code(503);
     echo json_encode(['error' => 'Brak vendor/ — uruchom: composer install'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-require __DIR__ . '/vendor/autoload.php';
+require dashboard_vendor_autoload();
 
-$cacheFile = __DIR__ . '/cache_events.json';
+$cacheFile = dashboard_cache_path('cache_events.json');
 $cacheTtl  = $config['CACHE_TTL'];
 
 // --- Sprawdz cache ---
 // Cache jest wazny tylko gdy: nie wygasl (TTL) ORAZ jest nowszy niz config.php i sam
 // skrypt - dzieki temu zmiana kolorow/nazw/URL-i w config.php widac od razu, bez czekania na TTL.
-if (file_exists($cacheFile)
+$cached = dashboard_cache_read('cache_events.json');
+if ($cached !== null
+    && file_exists($cacheFile)
     && (time() - filemtime($cacheFile) < $cacheTtl)
-    && filemtime($cacheFile) >= filemtime(__DIR__ . '/config.php')
+    && filemtime($cacheFile) >= filemtime(dashboard_config_path())
     && filemtime($cacheFile) >= filemtime(__FILE__)) {
-    echo file_get_contents($cacheFile);
+    echo $cached;
     exit;
 }
 
@@ -113,8 +115,9 @@ usort($output, fn($a, $b) => strtotime($a['start']) <=> strtotime($b['start']));
 
 // Nic nie pobrano, a byly bledy -> nie cachuj bledu; zwroc stary cache jesli jest
 if (empty($output) && !empty($errors)) {
-    if (file_exists($cacheFile)) {
-        echo file_get_contents($cacheFile);
+    $stale = dashboard_cache_read('cache_events.json');
+    if ($stale !== null) {
+        echo $stale;
     } else {
         echo json_encode(['events' => [], 'generated' => date('c'), 'errors' => $errors], JSON_UNESCAPED_UNICODE);
     }
@@ -123,5 +126,5 @@ if (empty($output) && !empty($errors)) {
 
 $json = json_encode(['events' => $output, 'generated' => date('c')], JSON_UNESCAPED_UNICODE);
 
-file_put_contents($cacheFile, $json);
+dashboard_cache_write('cache_events.json', $json);
 echo $json;

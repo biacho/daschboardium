@@ -7,7 +7,7 @@
  * jest schowany za allow/deny LAN w nginx; nie wystawiaj go publicznie.
  */
 
-require_once __DIR__ . '/load-config.php';
+require_once dirname(__DIR__) . '/lib/load-config.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');

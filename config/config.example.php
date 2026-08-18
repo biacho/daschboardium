@@ -1,7 +1,4 @@
 <?php
-// Skopiuj do config.php (`php install.php`) albo uzupełnij modalem
-// przy pierwszym otwarciu kiosku. Nie serwowany (nginx deny).
-// URL-e iCal traktuj jak sekrety — tego pliku nie commituj jako config.php.
 
 return [
     'ICAL_URLS' => [],

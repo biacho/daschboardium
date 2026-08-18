@@ -13,7 +13,7 @@
  * Padniecie pojedynczej domeny nie wywala calosci - to wlasnie jest wynik.
  */
 
-require_once __DIR__ . '/load-config.php';
+require_once dirname(__DIR__) . '/lib/load-config.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -23,18 +23,20 @@ if ($config === null) {
     dashboard_fail_unconfigured();
 }
 
-$cacheFile = __DIR__ . '/cache_domains.json';
-$rdapFile  = __DIR__ . '/cache_domains_rdap.json';
+$cacheFile = dashboard_cache_path('cache_domains.json');
+$rdapFile  = dashboard_cache_path('cache_domains_rdap.json');
 $cacheTtl  = $config['DOMAINS_CACHE_TTL'] ?? 300;
 $rdapTtl   = $config['DOMAINS_RDAP_TTL']  ?? 86400;
 
 // Cache wazny gdy: nie wygasl (TTL) ORAZ jest nowszy niz config.php i sam skrypt
 // - dzieki temu zmiana listy domen w config.php widac od razu, bez czekania na TTL.
-if (file_exists($cacheFile)
+$cached = dashboard_cache_read('cache_domains.json');
+if ($cached !== null
+    && file_exists($cacheFile)
     && (time() - filemtime($cacheFile) < $cacheTtl)
-    && filemtime($cacheFile) >= filemtime(__DIR__ . '/config.php')
+    && filemtime($cacheFile) >= filemtime(dashboard_config_path())
     && filemtime($cacheFile) >= filemtime(__FILE__)) {
-    echo file_get_contents($cacheFile);
+    echo $cached;
     exit;
 }
 
@@ -49,7 +51,7 @@ function fetchJson(string $url, array $headers = [], int $timeout = 6): ?array
         CURLOPT_CONNECTTIMEOUT => 4,
         CURLOPT_TIMEOUT        => $timeout,
         CURLOPT_HTTPHEADER     => $headers,
-        CURLOPT_USERAGENT      => 'ipad-dashboard/1.0 (domain monitor)',
+        CURLOPT_USERAGENT      => 'dashbordium/' . dashboard_version() . ' (domain monitor)',
     ]);
     $body = curl_exec($ch);
     $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
@@ -145,13 +147,11 @@ function cachedRdapExpiry(string $domain, string $rdapFile, int $rdapTtl): ?stri
     static $dirty = false;
 
     if ($cache === null) {
-        $cache = file_exists($rdapFile)
-            ? (json_decode(file_get_contents($rdapFile), true) ?: [])
-            : [];
-        // Zapis dopiero na koncu requestu, po wszystkich domenach
-        register_shutdown_function(function () use (&$cache, &$dirty, $rdapFile) {
+        $raw = dashboard_cache_read('cache_domains_rdap.json');
+        $cache = $raw ? (json_decode($raw, true) ?: []) : [];
+        register_shutdown_function(function () use (&$cache, &$dirty) {
             if ($dirty) {
-                @file_put_contents($rdapFile, json_encode($cache, JSON_UNESCAPED_UNICODE));
+                dashboard_cache_write('cache_domains_rdap.json', json_encode($cache, JSON_UNESCAPED_UNICODE));
             }
         });
     }
@@ -209,7 +209,7 @@ foreach ($domains as $name => $entry) {
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_ENCODING       => '',
-        CURLOPT_USERAGENT      => 'ipad-dashboard/1.0 (domain monitor)',
+        CURLOPT_USERAGENT      => 'dashbordium/' . dashboard_version() . ' (domain monitor)',
     ]);
     curl_exec($ch);
     $httpCode  = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
@@ -290,5 +290,5 @@ $json = json_encode(
     JSON_UNESCAPED_UNICODE
 );
 
-@file_put_contents($cacheFile, $json);
+dashboard_cache_write('cache_domains.json', $json);
 echo $json;

@@ -1,7 +1,7 @@
 /* ============== WYDARZENIA Z KALENDARZA ============== */
 // Endpoint PHP musi siedzieć na tym samym serwerze co kiosk.html
 // (albo ustaw pełny URL i odpowiednio CORS w get-events.php)
-const EVENTS_ENDPOINT = 'get-events.php';
+const EVENTS_ENDPOINT = 'api/get-events.php';
 
 function formatEventTime(ev) {
   if (ev.allDay) return 'cały dzień';

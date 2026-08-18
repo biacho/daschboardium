@@ -101,8 +101,8 @@ if (themeBtn) {
 /* ============== KONFIGURACJA ============== */
 // Modal edytuje config.php przez get-config.php / save-config.php.
 // URL-e iCal sa sekretami - endpointy sa tylko w LAN (nginx allow/deny).
-const CONFIG_GET = 'get-config.php';
-const CONFIG_SAVE = 'save-config.php';
+const CONFIG_GET = 'api/get-config.php';
+const CONFIG_SAVE = 'api/save-config.php';
 
 function escapeAttr(str) {
   return String(str)
