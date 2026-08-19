@@ -82,11 +82,17 @@ if ($pomodoro === []) {
     $pomodoro = [10, 15, 20];
 }
 
-$panelIds = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
-$panelsIn = is_array($config['PANELS'] ?? null) ? $config['PANELS'] : [];
-$panels = [];
-foreach ($panelIds as $id) {
-    $panels[$id] = array_key_exists($id, $panelsIn) ? (bool) $panelsIn[$id] : true;
+$panels = dashboard_normalize_panels($config['PANELS'] ?? []);
+
+$tidalUser = null;
+$tidalConnected = false;
+require_once dirname(__DIR__) . '/lib/tidal.php';
+if (tidal_connected()) {
+    $tidalConnected = true;
+    $store = tidal_token_store();
+    if (is_array($store['user'] ?? null) && !empty($store['user']['username'])) {
+        $tidalUser = (string) $store['user']['username'];
+    }
 }
 
 echo json_encode([
@@ -104,4 +110,17 @@ echo json_encode([
     ],
     'pomodoro' => $pomodoro,
     'panels'   => $panels,
+    'lastfm' => [
+        'user'   => (string) ($config['LASTFM_USER'] ?? ''),
+        'friend' => (string) ($config['LASTFM_FRIEND'] ?? ''),
+        'apiKey' => (string) ($config['LASTFM_API_KEY'] ?? ''),
+    ],
+    'tidal' => [
+        'clientId'     => (string) ($config['TIDAL_CLIENT_ID'] ?? ''),
+        'clientSecret' => (string) ($config['TIDAL_CLIENT_SECRET'] ?? ''),
+        'country'      => tidal_country($config),
+        'redirectUri'  => tidal_callback_uri(),
+        'connected'    => $tidalConnected,
+        'user'         => $tidalUser,
+    ],
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

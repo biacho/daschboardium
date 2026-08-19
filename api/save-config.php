@@ -32,34 +32,6 @@ function fail(int $code, string $msg): never
     exit;
 }
 
-function phpExport(mixed $value, int $indent = 0): string
-{
-    $pad = str_repeat('    ', $indent);
-    if (is_array($value)) {
-        if ($value === []) {
-            return '[]';
-        }
-        $isList = array_is_list($value);
-        $lines = ['['];
-        foreach ($value as $k => $v) {
-            $key = $isList ? '' : var_export((string) $k, true) . ' => ';
-            $lines[] = $pad . '    ' . $key . phpExport($v, $indent + 1) . ',';
-        }
-        $lines[] = $pad . ']';
-        return implode("\n", $lines);
-    }
-    if (is_bool($value)) {
-        return $value ? 'true' : 'false';
-    }
-    if (is_int($value) || is_float($value)) {
-        return var_export($value, true);
-    }
-    if ($value === null) {
-        return 'null';
-    }
-    return var_export((string) $value, true);
-}
-
 $weather = is_array($data['weather'] ?? null) ? $data['weather'] : [];
 $city = trim((string) ($weather['city'] ?? ''));
 if ($city === '' || mb_strlen($city) > 80) {
@@ -187,18 +159,39 @@ if ($pomodoro === []) {
     fail(400, 'Dodaj przynajmniej jeden preset pomodoro');
 }
 
-$panelIds = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
-$panelsIn = is_array($data['panels'] ?? null) ? $data['panels'] : [];
-$panels = [];
-$anyPanel = false;
-foreach ($panelIds as $id) {
-    $on = array_key_exists($id, $panelsIn) ? !empty($panelsIn[$id]) : true;
-    $panels[$id] = $on;
-    if ($on) {
-        $anyPanel = true;
-    }
+$lastfmIn = is_array($data['lastfm'] ?? null) ? $data['lastfm'] : [];
+$lastfmUser = trim((string) ($lastfmIn['user'] ?? ''));
+$lastfmFriend = trim((string) ($lastfmIn['friend'] ?? ''));
+$lastfmKey = trim((string) ($lastfmIn['apiKey'] ?? ''));
+if ($lastfmUser !== '' && !preg_match('/^[A-Za-z0-9_-]{1,50}$/', $lastfmUser)) {
+    fail(400, 'Last.fm: nick to 1–50 znaków (litery, cyfry, _ -)');
 }
-if (!$anyPanel) {
+if ($lastfmFriend !== '' && !preg_match('/^[A-Za-z0-9_-]{1,50}$/', $lastfmFriend)) {
+    fail(400, 'Last.fm: obserwowany nick to 1–50 znaków (litery, cyfry, _ -)');
+}
+if ($lastfmKey !== '' && !preg_match('/^[A-Za-z0-9]{8,64}$/', $lastfmKey)) {
+    fail(400, 'Last.fm: klucz API wygląda niepoprawnie');
+}
+
+$tidalIn = is_array($data['tidal'] ?? null) ? $data['tidal'] : [];
+$tidalId = trim((string) ($tidalIn['clientId'] ?? ''));
+$tidalSecret = trim((string) ($tidalIn['clientSecret'] ?? ''));
+$tidalCountry = strtoupper(trim((string) ($tidalIn['country'] ?? 'PL')));
+if ($tidalId !== '' && (strlen($tidalId) > 80 || !preg_match('/^[A-Za-z0-9._-]+$/', $tidalId))) {
+    fail(400, 'TIDAL: Client ID wygląda niepoprawnie');
+}
+if ($tidalSecret !== '' && (strlen($tidalSecret) > 120 || preg_match('/\s/', $tidalSecret))) {
+    fail(400, 'TIDAL: Client secret wygląda niepoprawnie');
+}
+if ($tidalCountry === '') {
+    $tidalCountry = 'PL';
+}
+if (!preg_match('/^[A-Z]{2}$/', $tidalCountry)) {
+    fail(400, 'TIDAL: kraj to kod ISO, np. PL');
+}
+
+$panels = dashboard_normalize_panels($data['panels'] ?? []);
+if (!in_array(true, $panels, true)) {
     fail(400, 'Zostaw przynajmniej jeden moduł');
 }
 
@@ -216,51 +209,23 @@ $out['WEATHER_LON']   = round((float) $lon, 4);
 $out['SHOW_CLAUDE']   = $showClaude;
 $out['SHOW_GROK']     = $showGrok;
 $out['GROK_PRODUCTS'] = $grokProducts;
-$out['POMODORO']       = $pomodoro;
-$out['PANELS']         = $panels;
-$out['SETUP_COMPLETE'] = true;
+$out['POMODORO']            = $pomodoro;
+$out['PANELS']              = $panels;
+$out['LASTFM_USER']         = $lastfmUser;
+$out['LASTFM_FRIEND']       = $lastfmFriend;
+$out['LASTFM_API_KEY']      = $lastfmKey;
+$out['TIDAL_CLIENT_ID']     = $tidalId;
+$out['TIDAL_CLIENT_SECRET'] = $tidalSecret;
+$out['TIDAL_COUNTRY']       = $tidalCountry;
+$out['SETUP_COMPLETE']      = true;
+$out['LAYOUT']              = dashboard_normalize_layout($out['LAYOUT'] ?? null);
 
-$preferred = [
-    'ICAL_URLS',
-    'CACHE_TTL',
-    'DAYS_AHEAD',
-    'DOMAINS',
-    'DOMAINS_CACHE_TTL',
-    'DOMAINS_RDAP_TTL',
-    'WEATHER_LAT',
-    'WEATHER_LON',
-    'WEATHER_CITY',
-    'SHOW_CLAUDE',
-    'SHOW_GROK',
-    'GROK_PRODUCTS',
-    'POMODORO',
-    'PANELS',
-    'SETUP_COMPLETE',
-];
-$ordered = [];
-foreach ($preferred as $key) {
-    if (array_key_exists($key, $out)) {
-        $ordered[$key] = $out[$key];
-    }
-}
-foreach ($out as $key => $value) {
-    if (!array_key_exists($key, $ordered)) {
-        $ordered[$key] = $value;
-    }
-}
-
-$php = "<?php\n"
-    . "// Wygenerowane przez panel konfiguracji. Nie serwowany (nginx deny).\n"
-    . "// URL-e iCal traktuj jak sekrety.\n\n"
-    . 'return ' . phpExport($ordered) . ";\n";
-
-$path = dashboard_config_path();
-if (file_put_contents($path, $php, LOCK_EX) === false) {
+if (!dashboard_write_config($out)) {
     fail(500, 'Nie udało się zapisać config.php (sprawdź uprawnienia)');
 }
-clearstatcache(true, $path);
-if (function_exists('opcache_invalidate')) {
-    opcache_invalidate($path, true);
-}
+
+dashboard_cache_write('cache_lastfm.json', '');
+dashboard_cache_write('cache_lastfm_friends.json', '');
+dashboard_cache_write('cache_tidal.json', '');
 
 echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);

@@ -40,6 +40,11 @@ $caches = [
     'cache_domains.json',
     'cache_domains_rdap.json',
     'cache_usage.json',
+    'cache_lastfm.json',
+    'cache_lastfm_friends.json',
+    'cache_tidal.json',
+    'cache_tidal_tokens.json',
+    'cache_tidal_oauth.json',
 ];
 
 foreach ($caches as $name) {

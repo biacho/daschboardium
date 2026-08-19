@@ -28,6 +28,7 @@ if ($config === null) {
         'grokProducts'  => ['GrokBuild', 'GrokChat', 'GrokImagine'],
         'pomodoro'      => [10, 15, 20],
         'panels'        => [],
+        'layout'        => dashboard_default_layout(),
     ], JSON_UNESCAPED_UNICODE) . ';';
     exit;
 }
@@ -54,12 +55,8 @@ foreach (is_array($config['POMODORO'] ?? null) ? $config['POMODORO'] : [10, 15, 
 sort($pomodoro);
 $pomodoro = array_slice($pomodoro, 0, 6);
 
-$panelIds = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
-$panelsIn = is_array($config['PANELS'] ?? null) ? $config['PANELS'] : [];
-$panels = [];
-foreach ($panelIds as $id) {
-    $panels[$id] = array_key_exists($id, $panelsIn) ? (bool) $panelsIn[$id] : true;
-}
+$panels = dashboard_normalize_panels($config['PANELS'] ?? []);
+$layout = dashboard_normalize_layout($config['LAYOUT'] ?? null);
 
 $public = [
     'weatherLat'    => $config['WEATHER_LAT']  ?? 51.1079,
@@ -70,6 +67,7 @@ $public = [
     'grokProducts'  => $grokProducts,
     'pomodoro'      => $pomodoro,
     'panels'        => $panels,
+    'layout'        => $layout,
     'setupComplete' => dashboard_setup_complete($config),
     'version'       => dashboard_version(),
 ];
