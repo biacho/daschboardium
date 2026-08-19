@@ -1,0 +1,186 @@
+  .lastfm-panel { flex: 0 1 auto; }
+  .lastfm-panel .panel-label { margin-bottom: 8px; }
+
+  .lastfm-main {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .lastfm-empty {
+    color: var(--text-muted);
+    font-size: clamp(12px, 1.2vw, 15px);
+  }
+
+  .lastfm-now {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .lastfm-art,
+  .lastfm-art-ph {
+    width: clamp(56px, 8.2vmin, 88px);
+    height: clamp(56px, 8.2vmin, 88px);
+    border-radius: 10px;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: var(--surface);
+    border: 1px solid var(--panel-border);
+  }
+
+  .lastfm-art-ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    font-size: clamp(14px, 2vmin, 20px);
+  }
+
+  .lastfm-meta { min-width: 0; flex: 1; }
+
+  .lastfm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: clamp(9px, 0.95vw, 11px);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--warn);
+    margin-bottom: 4px;
+  }
+  .lastfm-badge::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--warn);
+    box-shadow: 0 0 0 0 rgba(251, 106, 106, 0.55);
+    animation: lastfm-pulse 1.6s ease-out infinite;
+  }
+  .lastfm-badge.is-last {
+    color: var(--text-muted);
+  }
+  .lastfm-badge.is-last::before {
+    background: var(--text-muted);
+    box-shadow: none;
+    animation: none;
+  }
+
+  @keyframes lastfm-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(251, 106, 106, 0.45); }
+    70% { box-shadow: 0 0 0 8px rgba(251, 106, 106, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(251, 106, 106, 0); }
+  }
+
+  .lastfm-title {
+    font-weight: 700;
+    font-size: clamp(15px, 1.8vw, 22px);
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lastfm-artist {
+    color: var(--text-muted);
+    font-size: clamp(12px, 1.3vw, 16px);
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lastfm-recent {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .lastfm-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .lastfm-row-art,
+  .lastfm-row-ph {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: var(--surface);
+    border: 1px solid var(--panel-border);
+  }
+  .lastfm-row-ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .lastfm-row-txt {
+    min-width: 0;
+    flex: 1;
+    font-size: clamp(11px, 1.1vw, 13px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lastfm-row-txt .who { color: var(--text-muted); }
+
+  .lastfm-now.lastfm-friend {
+    padding-top: 8px;
+    border-top: 1px solid var(--panel-border);
+  }
+  .lastfm-now.lastfm-friend .lastfm-art,
+  .lastfm-now.lastfm-friend .lastfm-art-ph {
+    width: clamp(40px, 5.6vmin, 56px);
+    height: clamp(40px, 5.6vmin, 56px);
+    border-radius: 8px;
+  }
+  .lastfm-now.lastfm-friend .lastfm-title {
+    font-size: clamp(13px, 1.4vw, 16px);
+  }
+  .lastfm-now.lastfm-friend .lastfm-artist {
+    font-size: clamp(11px, 1.15vw, 13px);
+  }
+
+  .lastfm-friend-empty {
+    padding-top: 8px;
+    border-top: 1px solid var(--panel-border);
+    color: var(--text-muted);
+    font-size: clamp(11px, 1.1vw, 13px);
+  }
+
+  .lastfm-panel[data-density="snug"] .lastfm-art,
+  .lastfm-panel[data-density="snug"] .lastfm-art-ph {
+    width: 52px;
+    height: 52px;
+  }
+  .lastfm-panel[data-density="compact"] .lastfm-art,
+  .lastfm-panel[data-density="compact"] .lastfm-art-ph,
+  .lastfm-panel[data-density="tight"] .lastfm-art,
+  .lastfm-panel[data-density="tight"] .lastfm-art-ph {
+    width: 44px;
+    height: 44px;
+  }
+  .lastfm-panel[data-density="compact"] .lastfm-title,
+  .lastfm-panel[data-density="tight"] .lastfm-title { font-size: 14px; }
+  .lastfm-panel[data-density="compact"] .lastfm-recent,
+  .lastfm-panel[data-density="tight"] .lastfm-recent { display: none; }
+  .lastfm-panel[data-density="tight"] .lastfm-main { gap: 4px; }
+  .lastfm-panel[data-density="tight"] .lastfm-now.lastfm-friend .lastfm-artist { display: none; }
