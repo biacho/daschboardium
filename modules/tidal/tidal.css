@@ -1,0 +1,275 @@
+  .tidal-panel {
+    flex: 2.4;
+    min-height: 0;
+    pointer-events: auto;
+    z-index: 2;
+    padding: var(--panel-pad-y) var(--panel-pad-x);
+  }
+  .tidal-panel .panel-label { margin-bottom: 6px; }
+
+  .tidal-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .tidal-empty {
+    color: var(--text-muted);
+    font-size: clamp(12px, 1.2vw, 15px);
+  }
+
+  .tidal-search {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .tidal-search input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 16px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+    background: var(--surface);
+    color: var(--text);
+    -webkit-user-select: text;
+    user-select: text;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+  .tidal-btn-search {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .tidal-now {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+
+  .tidal-now-art,
+  .tidal-now-ph {
+    width: clamp(44px, 6.2vmin, 64px);
+    height: clamp(44px, 6.2vmin, 64px);
+    border-radius: 10px;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: var(--surface);
+    border: 1px solid var(--panel-border);
+  }
+  .tidal-now-ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(16px, 2.2vmin, 22px);
+    font-weight: 800;
+    color: var(--accent-cyan);
+  }
+
+  .tidal-now-meta { min-width: 0; flex: 1; }
+
+  .tidal-now-title {
+    font-weight: 700;
+    font-size: clamp(14px, 1.6vw, 20px);
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tidal-now-sub {
+    color: var(--text-muted);
+    font-size: clamp(11px, 1.15vw, 14px);
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tidal-progress {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .tidal-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(10px, 1.05vw, 12px);
+    color: var(--text-muted);
+    min-width: 3.2em;
+  }
+  .tidal-time.is-end { text-align: right; }
+
+  .tidal-bar {
+    position: relative;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tidal-bar-track {
+    width: 100%;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--usage-track);
+    overflow: hidden;
+  }
+  .tidal-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 99px;
+    background: var(--accent-cyan);
+  }
+
+  .tidal-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .tidal-btn {
+    appearance: none;
+    border: 1px solid var(--panel-border);
+    background: var(--surface);
+    color: var(--text);
+    width: clamp(36px, 5vmin, 44px);
+    height: clamp(36px, 5vmin, 44px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+  .tidal-btn svg { display: block; }
+  .tidal-btn:disabled { opacity: 0.35; pointer-events: none; }
+  .tidal-btn-play {
+    width: clamp(42px, 6vmin, 52px);
+    height: clamp(42px, 6vmin, 52px);
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: transparent;
+  }
+
+  .tidal-queue {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--panel-border) transparent;
+  }
+  .tidal-queue::-webkit-scrollbar { width: 5px; }
+  .tidal-queue::-webkit-scrollbar-thumb {
+    background: var(--panel-border);
+    border-radius: 99px;
+  }
+
+  .tidal-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 5px 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    width: 100%;
+    font: inherit;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+  .tidal-row.is-active {
+    background: var(--accent-dim);
+  }
+
+  .tidal-art,
+  .tidal-art-ph {
+    width: clamp(28px, 3.8vmin, 38px);
+    height: clamp(28px, 3.8vmin, 38px);
+    border-radius: 6px;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: var(--surface);
+    border: 1px solid var(--panel-border);
+  }
+  .tidal-art-ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent-cyan);
+  }
+
+  .tidal-txt { min-width: 0; flex: 1; }
+  .tidal-title {
+    font-weight: 650;
+    font-size: clamp(12px, 1.2vw, 14px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tidal-sub {
+    color: var(--text-muted);
+    font-size: clamp(10px, 1vw, 12px);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tidal-panel[data-density="snug"] .tidal-now-art,
+  .tidal-panel[data-density="snug"] .tidal-now-ph {
+    width: 44px;
+    height: 44px;
+  }
+  .tidal-panel[data-density="compact"] .tidal-search { display: none; }
+  .tidal-panel[data-density="compact"] .tidal-now-art,
+  .tidal-panel[data-density="compact"] .tidal-now-ph,
+  .tidal-panel[data-density="tight"] .tidal-now-art,
+  .tidal-panel[data-density="tight"] .tidal-now-ph {
+    width: 40px;
+    height: 40px;
+  }
+  .tidal-panel[data-density="tight"] .tidal-search,
+  .tidal-panel[data-density="tight"] .tidal-queue { display: none; }
+  .tidal-panel[data-density="compact"] .tidal-btn,
+  .tidal-panel[data-density="tight"] .tidal-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .tidal-panel[data-density="compact"] .tidal-btn-play,
+  .tidal-panel[data-density="tight"] .tidal-btn-play {
+    width: 40px;
+    height: 40px;
+  }
+
+  .tidal-media {
+    position: fixed;
+    width: 1px;
+    height: 1px;
+    left: -99px;
+    top: -99px;
+    opacity: 0;
+    pointer-events: none;
+  }
