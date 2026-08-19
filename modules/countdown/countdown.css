@@ -3,7 +3,6 @@
     padding: var(--panel-pad-y) var(--panel-pad-x);
     justify-content: center;
     gap: 6px;
-    border-left: 3px solid var(--countdown-bar, var(--accent));
   }
   .countdown-panel .panel-label { margin-bottom: 4px; }
   .countdown-panel.live { --countdown-bar: var(--amber); }
@@ -39,6 +38,18 @@
     font-variant-numeric: tabular-nums;
     color: var(--on-accent);
     white-space: nowrap;
+    overflow: hidden;
+  }
+  .countdown-colon {
+    display: inline-block;
+    animation: countdown-colon-blink 1s ease-in-out infinite;
+  }
+  @keyframes countdown-colon-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.12; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .countdown-colon { animation: none; opacity: 1; }
   }
   .countdown-panel.low .countdown-when { color: var(--accent-text); }
   .countdown-panel.live.low .countdown-when { color: var(--amber); }
@@ -46,9 +57,10 @@
     font-size: clamp(15px, 1.7vw, 22px);
     font-weight: 600;
     color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
     min-height: 1.2em;
   }
   .countdown-meta {
@@ -59,6 +71,22 @@
   }
   .countdown-title:empty,
   .countdown-meta:empty { display: none; }
+
+  .countdown-panel[data-density="snug"] { gap: 4px; }
+  .countdown-panel[data-density="compact"],
+  .countdown-panel[data-density="tight"] {
+    padding: 6px 10px;
+    gap: 3px;
+  }
+  .countdown-panel[data-density="compact"] .panel-label,
+  .countdown-panel[data-density="tight"] .panel-label { margin-bottom: 0; }
+  .countdown-panel[data-density="compact"] .countdown-bar,
+  .countdown-panel[data-density="tight"] .countdown-bar { height: 28px; }
+  .countdown-panel[data-density="compact"] .countdown-when,
+  .countdown-panel[data-density="tight"] .countdown-when { font-size: 15px; padding: 0 12px; }
+  .countdown-panel[data-density="tight"] .countdown-meta { display: none; }
+  .countdown-panel[data-density="compact"] .countdown-title,
+  .countdown-panel[data-density="tight"] .countdown-title { font-size: 14px; }
 
   @media (min-aspect-ratio: 11/10) and (max-width: 959px) and (min-width: 640px) and (min-height: 520px) {
     .countdown-panel { padding: 8px 12px; gap: 4px; }

@@ -4,6 +4,9 @@ Ustawienia siedzą w **`config/config.php`** (poza gitem). W repo jest tylko
 `config/config.example.php`. Na świeżej instalacji: `php install.php`, potem modal
 przy pierwszym otwarciu kiosku. Później — koło zębate albo `?config=1`.
 
+Modal ma listę modułów i osobny widok dla każdego. **Aktywny** zdejmuje
+kafelek; kolejność zmienisz w menu → Edytuj układ.
+
 Po zapisie odśwież stronę. Cache unieważnia się, gdy `config.php` jest nowszy
 niż plik w `var/`.
 
@@ -19,8 +22,23 @@ niż plik w `var/`.
 | `api/get-config.php` / `save-config.php` | Modal. iCal jest w odpowiedzi — tylko LAN. |
 | `api/get-events.php` | Scala kalendarze. |
 | `api/check-domains.php` | HTTP / DNS / SSL / RDAP. |
+| `api/lastfm.php` | Now playing / ostatnie scrobble. |
+| `api/lastfm-friends.php` | Lista znajomych Last.fm (select w modalu). |
+| `api/tidal.php` | Kolekcja TIDAL (po OAuth). |
+| `api/tidal-auth.php` / `tidal-callback.php` | OAuth 2.1 + PKCE. |
+| `api/save-layout.php` | Kolejność kafelków w kolumnach (tryb edycji siatki). |
 
-Frontend nie czyta PHP — pogoda i widoczność modułów idą przez `api/config-js.php`.
+Frontend nie czyta PHP — pogoda, widoczność i układ modułów idą przez `api/config-js.php`.
+
+---
+
+## Układ kafelków
+
+W landscape (3 kolumny) menu → **Edytuj układ**. Kafelki można chwycić i włożyć w inną kolumnę albo zmienić kolejność. Internet zostaje belką u góry.
+
+Gdy w kolumnie robi się ciaśniej, każdy kafelek sam ścina padding, czcionki i mniej ważne dane (np. wiatr w pogodzie). Last.fm, pogoda, zegar i odliczanie biorą wysokość z zawartości — resztę kolumny zabierają siatka kalendarza, lista wydarzeń, TIDAL. Jeden kafelek w kolumnie wypełnia ją całą.
+
+`LAYOUT` w `config.php` to trzy listy id: `left`, `mid`, `right`. Brak klucza = domyślny układ.
 
 ---
 
@@ -62,6 +80,42 @@ Wystarczy nazwa (`example.pl`). Opcjonalnie:
 | `Rozjazd` | `expect_a` / `expect_mx` nie zgadza się z DNS. |
 
 Kropka: zielona = OK, żółta = uwaga, czerwona = błąd.
+
+---
+
+## Last.fm
+
+Klucz z [last.fm/api/account/create](https://www.last.fm/api/account/create)
+i nick konta, które scrobbluje. W Apple Music / TIDAL włącz scrobbling —
+kafelek pokazuje, co leci (z kilkunastosekundowym opóźnieniem). Bez sterowania.
+
+Opcjonalnie **Obserwowany** (`LASTFM_FRIEND`): jedna osoba z listy znajomych
+Last.fm (follow). Lista ładuje się w modalu; **Odśwież** pobiera ją na nowo.
+Kafelek doda jej now playing pod Twoim. Profil musi być publiczny — klucz API
+wystarczy, logowanie tamtej osoby nie jest potrzebne.
+
+`LASTFM_CACHE_TTL` (domyślnie 20 s) jest tylko w `config.php`.
+
+---
+
+## TIDAL
+
+Kafelek **TIDAL Player** odtwarza na iPadzie przez oficjalne Player SDK
+(play / pauza / poprzedni / następny, pasek postępu, kolejka z kolekcji).
+Nie steruje aplikacją na telefonie — TIDAL nie daje publicznego Connect API.
+
+Po tej zmianie kliknij **Połącz** jeszcze raz. Zakresy OAuth: `user.read collection.read`
+(stare `r_usr` / `w_usr` na nowym portalu dają błąd **11102**).
+
+1. Aplikacja na [developer.tidal.com](https://developer.tidal.com/).
+2. Client ID i Secret w modalu.
+3. Redirect URI z pola w konfiguracji wklej 1:1 w dashboardzie TIDAL.
+4. **Połącz** — OAuth 2.1 + PKCE. Token odświeża PHP, siedzi w `var/` (nie w `config.php`).
+
+Z iPada na HTTP w LAN redirect zwykle nie przejdzie. Połącz z maszyny, na której
+stoi PHP, przez `http://127.0.0.1/.../api/tidal-callback.php`.
+
+`TIDAL_CACHE_TTL` (domyślnie 300 s) jest tylko w `config.php`.
 
 ---
 

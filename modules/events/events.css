@@ -58,9 +58,10 @@
     font-size: clamp(13px, 1.4vw, 16px);
     font-weight: 600;
     color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
   }
 
   .event-time {
@@ -75,6 +76,21 @@
     font-size: 14px;
     padding: 20px 0;
   }
+
+  .events-panel[data-density="snug"] .panel-label { margin-bottom: 4px; }
+  .events-panel[data-density="compact"] .event-item,
+  .events-panel[data-density="tight"] .event-item {
+    padding: 4px 8px;
+    margin-bottom: 2px;
+    gap: 8px;
+  }
+  .events-panel[data-density="compact"] .events-day-label,
+  .events-panel[data-density="tight"] .events-day-label {
+    margin-top: 4px;
+    margin-bottom: 2px;
+    font-size: 11px;
+  }
+  .events-panel[data-density="tight"] .event-title { font-size: 13px; }
 
   @media (max-width: 639px), (max-height: 519px) {
     .events-panel { min-height: 220px; }

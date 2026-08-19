@@ -120,6 +120,22 @@
     .clock-colon { animation: none; opacity: 1; }
   }
 
+  .clock-panel[data-density="snug"] { gap: 4px; }
+  .clock-panel[data-density="compact"],
+  .clock-panel[data-density="tight"] {
+    padding: 4px 8px 5px;
+    gap: 4px;
+  }
+  .clock-panel[data-density="tight"] .pomodoro-label { display: none; }
+  .clock-panel[data-density="compact"] .pomodoro-btn,
+  .clock-panel[data-density="tight"] .pomodoro-btn {
+    min-height: 26px;
+    min-width: 44px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  .clock-panel[data-density="tight"] .pomodoro-bar { gap: 4px; }
+
   @media (max-aspect-ratio: 11/10) and (min-width: 640px) and (min-height: 520px) {
     .clock-panel {
       flex-direction: row;

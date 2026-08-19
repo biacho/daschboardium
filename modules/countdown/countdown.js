@@ -23,15 +23,23 @@ function pickCountdownEvent(events, now) {
   return timed[0] || allDay[0] || null;
 }
 
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
 function formatRemain(ms) {
-  const mins = Math.max(0, Math.ceil(ms / 60000));
-  if (mins <= 0) return 'teraz';
-  if (mins < 60) return mins + ' min';
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  if (h < 24) return m > 0 ? `${h} h ${m} min` : `${h} h`;
-  const days = Math.floor(h / 24);
-  return days === 1 ? '1 dzień' : days + ' dni';
+  const sec = Math.max(0, Math.ceil(ms / 1000));
+  if (sec <= 0) return 'teraz';
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  const colon = '<span class="countdown-colon" aria-hidden="true">:</span>';
+  return pad2(h) + colon + pad2(m) + colon + pad2(s);
+}
+
+function setCountdownWhen(el, html) {
+  if (!el) return;
+  el.innerHTML = html;
 }
 
 // Okno paska: do startu - od polnocy; w trakcie - od startu do konca.
@@ -79,7 +87,7 @@ function renderCountdown() {
     panel.style.removeProperty('--countdown-bar');
     setCountdownBar(panel, 0);
     if (label) label.textContent = 'Następne';
-    when.textContent = '—';
+    setCountdownWhen(when, '—');
     if (title) title.textContent = 'Brak nadchodzących';
     if (meta) meta.textContent = '';
     return;
@@ -96,16 +104,16 @@ function renderCountdown() {
 
   if (ev.allDay && !live) {
     if (label) label.textContent = 'Następne';
-    when.textContent = 'cały dzień';
+    setCountdownWhen(when, 'cały dzień');
   } else if (ev.allDay) {
     if (label) label.textContent = 'Dziś';
-    when.textContent = 'cały dzień';
+    setCountdownWhen(when, 'cały dzień');
   } else if (live) {
     if (label) label.textContent = 'Teraz';
-    when.textContent = 'jeszcze ' + formatRemain(eventEndMs(ev) - now);
+    setCountdownWhen(when, formatRemain(eventEndMs(ev) - now));
   } else {
     if (label) label.textContent = 'Następne';
-    when.textContent = 'za ' + formatRemain(start - now);
+    setCountdownWhen(when, formatRemain(start - now));
   }
 
   if (title) title.textContent = ev.title || '';

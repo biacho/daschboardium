@@ -113,6 +113,21 @@
     padding: 20px 0;
   }
 
+  .domains-panel[data-density="snug"] .panel-label { margin-bottom: 4px; }
+  .domains-panel[data-density="compact"] .domain-item,
+  .domains-panel[data-density="tight"] .domain-item {
+    padding: 4px 8px;
+    gap: 2px;
+  }
+  .domains-panel[data-density="compact"] .domain-name,
+  .domains-panel[data-density="tight"] .domain-name { font-size: 14px; }
+  .domains-panel[data-density="compact"] .domains-updated,
+  .domains-panel[data-density="tight"] .domains-updated { display: none; }
+  .domains-panel[data-density="tight"] .domain-badge {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+
   @media (max-aspect-ratio: 11/10) and (min-width: 640px) and (min-height: 520px) {
     .domains-list { justify-content: flex-start; }
   }

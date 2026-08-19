@@ -39,7 +39,32 @@ function renderCalendar() {
     el.textContent = d;
     grid.appendChild(el);
   }
+  fitCalDays();
 }
-if (panelOn('calendar')) renderCalendar();
-/* Odśwież datę o północy */
-if (panelOn('calendar')) setInterval(renderCalendar, 60 * 1000);
+
+function fitCalDays() {
+  const grid = document.getElementById('calGrid');
+  if (!grid) return;
+  const day = grid.querySelector('.cal-day:not(.empty)');
+  if (!day) return;
+  const h = day.clientHeight;
+  const w = day.clientWidth;
+  if (h < 4 || w < 4) return;
+  const size = Math.max(9, Math.min(Math.floor(h * 0.52), Math.floor(w * 0.48), 20));
+  grid.style.setProperty('--cal-day-size', size + 'px');
+}
+
+if (panelOn('calendar')) {
+  renderCalendar();
+  requestAnimationFrame(() => requestAnimationFrame(fitCalDays));
+  setInterval(renderCalendar, 60 * 1000);
+  const grid = document.getElementById('calGrid');
+  const panel = document.querySelector('.cal-panel');
+  if (grid && typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(fitCalDays);
+    ro.observe(grid);
+    if (panel) ro.observe(panel);
+  } else {
+    window.addEventListener('resize', fitCalDays);
+  }
+}

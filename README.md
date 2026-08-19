@@ -34,6 +34,10 @@ sudo nginx -t && sudo systemctl reload nginx
 | Odliczanie | do najbliższego wydarzenia |
 | Pogoda | Open-Meteo |
 | Domeny | HTTP, DNS, SSL, wygaśnięcie rejestracji |
+| Last.fm | teraz leci / ostatnie scrobble, opcjonalnie follow |
+| TIDAL Player | odtwarzacz na iPadzie (kolekcja + play/pauza/next) |
+
+W landscape: menu → **Edytuj układ** — przeciągasz kafelki między kolumnami (jak ikony na iOS). Gdy kolumna się ściska, zawartość kafelka sama się dopasowuje.
 
 ## Licencja
 

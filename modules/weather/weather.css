@@ -7,12 +7,12 @@
     gap: 12px;
     flex: 1;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start;
     min-height: 0;   /* bez tego flex nie pozwala zawartosci sie sciesnic */
   }
 
   .weather-icon {
-    font-size: clamp(34px, 4.2vw, 56px);
+    font-size: clamp(34px, 6.2vw, 56px);
     padding: 0 .2em;
   }
 
@@ -29,8 +29,8 @@
   .weather-current-temp {
     display: flex;
     gap: 1em;
-    align-items: flex-end;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: space-evenly;
     width: 100%;
   }
 
@@ -50,6 +50,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 6px 20px;
     align-content: center;
+    justify-items: center;
     width: 100%;
   }
   .weather-stat { display: flex; flex-direction: column; gap: 2px; }
@@ -70,6 +71,43 @@
   @media (max-aspect-ratio: 1/1) {
     .weather-stats { margin-left: 0; margin-top: 14px; }
   }
+
+  .weather-panel[data-density="snug"] .weather-temp {
+    font-size: clamp(28px, 3.8vw, 48px);
+  }
+  .weather-panel[data-density="snug"] .weather-icon {
+    font-size: clamp(26px, 3.4vw, 40px);
+  }
+  .weather-panel[data-density="snug"] .weather-sub { margin-top: 2px; }
+
+  .weather-panel[data-density="compact"] .weather-temp,
+  .weather-panel[data-density="tight"] .weather-temp {
+    font-size: clamp(22px, 3.2vw, 34px);
+  }
+  /*.weather-panel[data-density="compact"] .weather-icon,*/
+  /*.weather-panel[data-density="tight"] .weather-icon {*/
+  /*  font-size: clamp(20px, 2.8vw, 30px);*/
+  /*  padding: 0;*/
+  /*}*/
+  .weather-panel[data-density="compact"] .weather-sub,
+  .weather-panel[data-density="tight"] .weather-sub {
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .weather-panel[data-density="compact"] .weather-stats {
+    gap: 2px 10px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .weather-panel[data-density="compact"] .weather-stat[data-stat="wind"],
+  .weather-panel[data-density="tight"] .weather-stat[data-stat="wind"] {
+    display: none;
+  }
+  .weather-panel[data-density="compact"] .weather-stat .v {
+    font-size: clamp(12px, 1.3vw, 15px);
+  }
+  .weather-panel[data-density="tight"] .weather-stats { display: none; }
+  .weather-panel[data-density="tight"] .weather-main { justify-content: center; }
+  .weather-panel[data-density="tight"] .weather-current-temp { gap: 0.5em; }
 
   @media (min-aspect-ratio: 11/10) and (max-width: 959px) and (min-width: 640px) and (min-height: 520px) {
     .weather-main {

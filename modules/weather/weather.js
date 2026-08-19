@@ -1,7 +1,7 @@
-// Naglowek: "Pogoda · <miasto>"
+// Naglowek: Pogoda | miasto
 {
-  const lbl = document.getElementById('weatherLabel');
-  if (lbl) lbl.textContent = 'Pogoda · ' + WEATHER_CITY;
+  const lbl = document.getElementById('weatherCity');
+  if (lbl) lbl.textContent = WEATHER_CITY;
 }
 
 const weatherIcons = {
@@ -37,12 +37,12 @@ async function fetchWeather() {
     document.getElementById('weatherTemp').textContent = `${temp}°`;
     document.getElementById('weatherSub').textContent = `Dziś od ${tMin}° do ${tMax}°`;
 
-    const stat = (k, v) => `<div class="weather-stat"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+    const stat = (key, k, v) => `<div class="weather-stat" data-stat="${key}"><span class="k">${k}</span><span class="v">${v}</span></div>`;
     document.getElementById('weatherStats').innerHTML =
-        stat('Odczuwalna', `${feels}°`)
-      + stat('Wilgotność', `${hum}%`)
-      + stat('Wiatr', `${wind} km/h`)
-      + stat('Opady', pop != null ? `${pop}%` : '—');
+        stat('feels', 'Odczuwalna', `${feels}°`)
+      + stat('humidity', 'Wilgotność', `${hum}%`)
+      + stat('wind', 'Wiatr', `${wind} km/h`)
+      + stat('precip', 'Opady', pop != null ? `${pop}%` : '—');
   } catch (e) {
     document.getElementById('weatherSub').textContent = 'Brak danych pogodowych';
     document.getElementById('weatherStats').innerHTML = '';

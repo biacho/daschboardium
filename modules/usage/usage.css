@@ -191,6 +191,19 @@
   .usage-updated:empty { display: none; }
   .usage-updated.stale { color: var(--amber); font-weight: 600; }
 
+  .usage-panel[data-density="snug"] .panel-label { margin-bottom: 4px; }
+  .usage-panel[data-density="snug"] .usage-group { padding: 5px 8px 6px 10px; gap: 4px; }
+  .usage-panel[data-density="compact"] .usage-group,
+  .usage-panel[data-density="tight"] .usage-group {
+    padding: 4px 8px 5px 10px;
+    gap: 3px;
+  }
+  .usage-panel[data-density="compact"] .usage-updated,
+  .usage-panel[data-density="tight"] .usage-updated { display: none; }
+  .usage-panel[data-density="compact"] .usage-bar,
+  .usage-panel[data-density="tight"] .usage-bar { height: 18px; }
+  .usage-panel[data-density="tight"] .usage-group-label { font-size: 9px; }
+
   @media (max-aspect-ratio: 11/10) and (min-width: 640px) and (min-height: 520px) {
     .usage-group { padding: 5px 8px 6px 10px; gap: 4px; }
     .usage-panel .panel-label { margin-bottom: 6px; }

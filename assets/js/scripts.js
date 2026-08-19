@@ -1,6 +1,6 @@
 /* ============== MODUŁY (wlacz / wylacz) ============== */
 const APP = window.APP_CONFIG || {};
-const PANEL_IDS = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown'];
+const PANEL_IDS = ['internet', 'usage', 'domains', 'calendar', 'weather', 'clock', 'events', 'countdown', 'lastfm', 'tidal'];
 
 function panelOn(id) {
   const p = APP.panels;
@@ -11,6 +11,10 @@ function panelOn(id) {
 function syncPanelLayout() {
   const kiosk = document.querySelector('.kiosk');
   if (!kiosk) return;
+  if (kiosk.classList.contains('is-editing')) {
+    kiosk.dataset.cols = 'lmr';
+    return;
+  }
   const left = !!kiosk.querySelector('.col-left > .panel:not([hidden])');
   const mid = !!kiosk.querySelector('.col-mid > .panel:not([hidden])');
   const right = !!kiosk.querySelector('.col-right > .panel:not([hidden])');
@@ -103,6 +107,7 @@ if (themeBtn) {
 // URL-e iCal sa sekretami - endpointy sa tylko w LAN (nginx allow/deny).
 const CONFIG_GET = 'api/get-config.php';
 const CONFIG_SAVE = 'api/save-config.php';
+const LASTFM_FRIENDS = 'api/lastfm-friends.php';
 
 function escapeAttr(str) {
   return String(str)
@@ -132,6 +137,51 @@ function setConfigStatus(text, kind) {
   el.textContent = text || '';
   el.classList.toggle('error', kind === 'error');
   el.classList.toggle('ok', kind === 'ok');
+}
+
+const CFG_PANE_KEY = 'dashboard-config-pane';
+
+function showConfigPane(id) {
+  const known = document.querySelector('.config-pane[data-cfg-pane="' + id + '"]');
+  if (!known) id = 'weather';
+  document.querySelectorAll('.config-pane').forEach((pane) => {
+    pane.hidden = pane.dataset.cfgPane !== id;
+  });
+  document.querySelectorAll('.config-nav-item').forEach((btn) => {
+    const on = btn.dataset.cfgPane === id;
+    btn.classList.toggle('is-active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    btn.tabIndex = on ? 0 : -1;
+  });
+  const body = document.querySelector('.config-body');
+  if (body) body.scrollTop = 0;
+  try { sessionStorage.setItem(CFG_PANE_KEY, id); } catch (e) {}
+  const active = document.querySelector('.config-nav-item.is-active');
+  if (active && active.scrollIntoView) {
+    active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+}
+
+function initialConfigPane() {
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.get('tidal') === 'ok' || q.get('tidal') === 'err') return 'tidal';
+  } catch (e) {}
+  if (typeof IS_FIRST_RUN !== 'undefined' && IS_FIRST_RUN) return 'weather';
+  try {
+    const saved = sessionStorage.getItem(CFG_PANE_KEY);
+    if (saved && document.querySelector('.config-pane[data-cfg-pane="' + saved + '"]')) {
+      return saved;
+    }
+  } catch (e) {}
+  return 'weather';
+}
+
+function syncConfigNavOff() {
+  document.querySelectorAll('.cfg-panel').forEach((cb) => {
+    const btn = document.querySelector('.config-nav-item[data-cfg-pane="' + cb.value + '"]');
+    if (btn) btn.classList.toggle('is-off', !cb.checked);
+  });
 }
 
 const CFG_ICON_X = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -224,12 +274,134 @@ function fillConfigForm(data) {
   document.querySelectorAll('.cfg-panel').forEach((el) => {
     el.checked = panels[el.value] !== false;
   });
+  syncConfigNavOff();
 
   const pomos = document.getElementById('cfgPomodoro');
   if (pomos) {
     pomos.innerHTML = '';
     const list = (data.pomodoro && data.pomodoro.length) ? data.pomodoro : [10, 15, 20];
     list.forEach((min) => pomos.appendChild(pomoRow(min)));
+  }
+
+  const lastfm = data.lastfm || {};
+  const lUser = document.getElementById('cfgLastfmUser');
+  const lFriend = document.getElementById('cfgLastfmFriend');
+  const lKey = document.getElementById('cfgLastfmKey');
+  if (lUser) lUser.value = lastfm.user || '';
+  if (lKey) lKey.value = lastfm.apiKey || '';
+  if (lFriend) {
+    lFriend.dataset.pending = lastfm.friend || '';
+    fillLastfmFriendSelect([], lastfm.friend || '', 'Wczytywanie listy…');
+  }
+
+  const tidal = data.tidal || {};
+  const tId = document.getElementById('cfgTidalId');
+  const tSecret = document.getElementById('cfgTidalSecret');
+  const tCountry = document.getElementById('cfgTidalCountry');
+  const tRedir = document.getElementById('cfgTidalRedirect');
+  if (tId) tId.value = tidal.clientId || '';
+  if (tSecret) tSecret.value = tidal.clientSecret || '';
+  if (tCountry) tCountry.value = tidal.country || 'PL';
+  if (tRedir) tRedir.value = tidal.redirectUri || '';
+  fillTidalStatus(tidal);
+}
+
+let lastfmFriendsSeq = 0;
+
+function lastfmFriendLabel(friend) {
+  if (typeof friend === 'string') return friend;
+  const name = (friend && friend.name) || '';
+  const real = (friend && friend.realname) || '';
+  if (real && real.toLowerCase() !== name.toLowerCase()) {
+    return name + ' · ' + real;
+  }
+  return name;
+}
+
+function fillLastfmFriendSelect(friends, selected, placeholder) {
+  const sel = document.getElementById('cfgLastfmFriend');
+  if (!sel) return;
+  const wanted = String(selected == null ? (sel.dataset.pending || '') : selected).trim();
+  const list = Array.isArray(friends) ? friends.slice() : [];
+  const names = list.map((f) => (typeof f === 'string' ? f : (f && f.name) || '')).filter(Boolean);
+  const inList = names.some((n) => n.toLowerCase() === wanted.toLowerCase());
+  if (wanted && !inList) {
+    list.unshift({ name: wanted, realname: '', extra: true });
+  }
+
+  sel.innerHTML = '';
+  const none = document.createElement('option');
+  none.value = '';
+  none.textContent = placeholder || 'Nikt';
+  sel.appendChild(none);
+  list.forEach((f) => {
+    const name = typeof f === 'string' ? f : (f && f.name) || '';
+    if (!name) return;
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = f && f.extra ? (name + ' (poza listą)') : lastfmFriendLabel(f);
+    sel.appendChild(opt);
+  });
+  sel.value = wanted;
+  if (sel.value !== wanted && wanted) {
+    sel.value = '';
+  }
+}
+
+async function loadLastfmFriends(opts) {
+  const sel = document.getElementById('cfgLastfmFriend');
+  if (!sel) return;
+  const refresh = !!(opts && opts.refresh);
+  const user = ((document.getElementById('cfgLastfmUser') || {}).value || '').trim();
+  const apiKey = ((document.getElementById('cfgLastfmKey') || {}).value || '').trim();
+  const selected = String(sel.dataset.pending != null ? sel.dataset.pending : sel.value).trim();
+  const seq = ++lastfmFriendsSeq;
+  const btn = document.getElementById('cfgLastfmFriendsRefresh');
+  if (btn) btn.disabled = true;
+  sel.disabled = true;
+  fillLastfmFriendSelect([], selected, user && apiKey ? 'Wczytywanie listy…' : 'Nikt');
+
+  if (!user || !apiKey) {
+    sel.disabled = false;
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  try {
+    const url = LASTFM_FRIENDS + (refresh ? '?refresh=1' : '');
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({ user, apiKey }),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (seq !== lastfmFriendsSeq) return;
+    if (data.error && !(data.friends && data.friends.length)) {
+      fillLastfmFriendSelect([], selected, 'Nie udało się wczytać listy');
+      return;
+    }
+    fillLastfmFriendSelect(data.friends || [], selected, 'Nikt');
+    sel.dataset.pending = sel.value;
+  } catch (e) {
+    if (seq !== lastfmFriendsSeq) return;
+    fillLastfmFriendSelect([], selected, 'Nie udało się wczytać listy');
+  } finally {
+    if (seq === lastfmFriendsSeq) {
+      sel.disabled = false;
+      if (btn) btn.disabled = false;
+    }
+  }
+}
+
+function fillTidalStatus(tidal) {
+  const el = document.getElementById('cfgTidalStatus');
+  if (!el) return;
+  if (tidal && tidal.connected) {
+    el.textContent = tidal.user ? ('Połączono jako ' + tidal.user) : 'Połączono.';
+  } else {
+    el.textContent = 'Nie połączono.';
   }
 }
 
@@ -252,6 +424,16 @@ function collectConfigForm() {
     },
     pomodoro: [],
     panels: {},
+    lastfm: {
+      user: ((document.getElementById('cfgLastfmUser') || {}).value || '').trim(),
+      friend: ((document.getElementById('cfgLastfmFriend') || {}).value || '').trim(),
+      apiKey: ((document.getElementById('cfgLastfmKey') || {}).value || '').trim(),
+    },
+    tidal: {
+      clientId: ((document.getElementById('cfgTidalId') || {}).value || '').trim(),
+      clientSecret: ((document.getElementById('cfgTidalSecret') || {}).value || '').trim(),
+      country: ((document.getElementById('cfgTidalCountry') || {}).value || '').trim(),
+    },
   };
   document.querySelectorAll('.cfg-panel').forEach((el) => {
     payload.panels[el.value] = !!el.checked;
@@ -292,6 +474,12 @@ async function loadConfigForm() {
     if (data.error) throw new Error(data.error);
     fillConfigForm(data);
     setConfigStatus('', null);
+    loadLastfmFriends();
+    try {
+      const q = new URLSearchParams(location.search);
+      if (q.get('tidal') === 'ok') setConfigStatus('TIDAL połączony', 'ok');
+      if (q.get('tidal') === 'err') setConfigStatus('Nie udało się połączyć TIDAL', 'error');
+    } catch (err) {}
     if (saveBtn) saveBtn.disabled = false;
   } catch (e) {
     fillConfigForm({ weather: {}, calendars: [], domains: [], limits: {}, pomodoro: [] });
@@ -305,7 +493,7 @@ function applySetupMode(on) {
   const overlay = document.getElementById('configOverlay');
   const title = document.getElementById('configTitle');
   if (overlay) overlay.classList.toggle('is-setup', on);
-  if (title) title.textContent = on ? 'Pierwsze uruchomienie' : 'Konfiguracja';
+  if (title) title.textContent = on ? 'Pierwsze uruchomienie' : 'Ustawienia';
 }
 
 function openConfig() {
@@ -314,9 +502,13 @@ function openConfig() {
   closePathMenuNow();
   applySetupMode(IS_FIRST_RUN);
   overlay.hidden = false;
+  const pane = initialConfigPane();
+  showConfigPane(pane);
   loadConfigForm();
-  const city = document.getElementById('cfgWeatherCity');
-  if (city) setTimeout(() => city.focus(), 50);
+  if (pane === 'weather') {
+    const city = document.getElementById('cfgWeatherCity');
+    if (city) setTimeout(() => city.focus(), 50);
+  }
 }
 
 function closeConfig() {
@@ -357,31 +549,65 @@ async function lookupWeatherCity() {
   }
 }
 
+async function persistConfig() {
+  const payload = collectConfigForm();
+  if (!Object.values(payload.panels).some(Boolean)) {
+    throw new Error('Zostaw przynajmniej jeden moduł');
+  }
+  const res = await fetch(CONFIG_SAVE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store',
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.error) throw new Error(data.error || ('HTTP ' + res.status));
+  APP.panels = payload.panels;
+  applyPanelVisibility();
+  return payload;
+}
+
 async function saveConfig(ev) {
   if (ev) ev.preventDefault();
   const saveBtn = document.getElementById('configSave');
   if (saveBtn) saveBtn.disabled = true;
   setConfigStatus('Zapisuję...', null);
   try {
-    const payload = collectConfigForm();
-    if (!Object.values(payload.panels).some(Boolean)) {
-      throw new Error('Zostaw przynajmniej jeden moduł');
-    }
-    const res = await fetch(CONFIG_SAVE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      cache: 'no-store',
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || data.error) throw new Error(data.error || ('HTTP ' + res.status));
-    APP.panels = payload.panels;
-    applyPanelVisibility();
+    await persistConfig();
     closeConfig();
     location.replace(location.pathname + '?_=' + Date.now());
   } catch (e) {
     setConfigStatus(e.message || 'Nie udało się zapisać', 'error');
     if (saveBtn) saveBtn.disabled = false;
+  }
+}
+
+async function connectTidal() {
+  const saveBtn = document.getElementById('configSave');
+  if (saveBtn) saveBtn.disabled = true;
+  setConfigStatus('Zapisuję i łączę TIDAL...', null);
+  try {
+    const payload = await persistConfig();
+    if (!payload.tidal.clientId || !payload.tidal.clientSecret) {
+      throw new Error('Najpierw wpisz Client ID i Secret');
+    }
+    location.assign('api/tidal-auth.php');
+  } catch (e) {
+    setConfigStatus(e.message || 'Nie udało się rozpocząć łączenia', 'error');
+    if (saveBtn) saveBtn.disabled = false;
+  }
+}
+
+async function disconnectTidal() {
+  setConfigStatus('Rozłączam TIDAL...', null);
+  try {
+    const res = await fetch('api/tidal-disconnect.php', { method: 'POST', cache: 'no-store' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) throw new Error(data.error || ('HTTP ' + res.status));
+    fillTidalStatus({ connected: false });
+    setConfigStatus('TIDAL rozłączony', 'ok');
+  } catch (e) {
+    setConfigStatus(e.message || 'Nie udało się rozłączyć', 'error');
   }
 }
 
@@ -399,12 +625,46 @@ async function saveConfig(ev) {
   const doms = document.getElementById('cfgDomains');
   const pomos = document.getElementById('cfgPomodoro');
   const showGrok = document.getElementById('cfgShowGrok');
+  const lastfmFriendsRefresh = document.getElementById('cfgLastfmFriendsRefresh');
+  const configNav = document.getElementById('configNav');
+  const tidalConnect = document.getElementById('cfgTidalConnect');
+  const tidalDisconnect = document.getElementById('cfgTidalDisconnect');
 
   if (btn) btn.addEventListener('click', openConfig);
   if (closeBtn) closeBtn.addEventListener('click', closeConfig);
   if (cancelBtn) cancelBtn.addEventListener('click', closeConfig);
   if (form) form.addEventListener('submit', saveConfig);
   if (lookup) lookup.addEventListener('click', lookupWeatherCity);
+  if (configNav) {
+    configNav.addEventListener('click', (e) => {
+      const btn = e.target.closest('.config-nav-item');
+      if (!btn || !configNav.contains(btn)) return;
+      showConfigPane(btn.dataset.cfgPane);
+    });
+  }
+  if (form) {
+    form.addEventListener('click', (e) => {
+      const jump = e.target.closest('[data-cfg-goto]');
+      if (!jump || !form.contains(jump)) return;
+      showConfigPane(jump.getAttribute('data-cfg-goto'));
+    });
+    form.addEventListener('change', (e) => {
+      if (e.target && e.target.classList && e.target.classList.contains('cfg-panel')) {
+        syncConfigNavOff();
+      }
+    });
+  }
+  if (lastfmFriendsRefresh) {
+    lastfmFriendsRefresh.addEventListener('click', () => loadLastfmFriends({ refresh: true }));
+  }
+  const lastfmFriendSel = document.getElementById('cfgLastfmFriend');
+  if (lastfmFriendSel) {
+    lastfmFriendSel.addEventListener('change', () => {
+      lastfmFriendSel.dataset.pending = lastfmFriendSel.value;
+    });
+  }
+  if (tidalConnect) tidalConnect.addEventListener('click', connectTidal);
+  if (tidalDisconnect) tidalDisconnect.addEventListener('click', disconnectTidal);
   if (addCal && cals) {
     addCal.addEventListener('click', () => {
       cals.appendChild(calendarRow({}));
@@ -501,7 +761,7 @@ if (refreshBtn) {
   const RADIUS = 128;
 
   function items() {
-    return Array.from(menu.querySelectorAll('.path-item'));
+    return Array.from(menu.querySelectorAll('.path-item')).filter((el) => !el.hidden);
   }
 
   // Szerszy luk niz dawniej: przy 3 przyciskach maja ~32 px przerwy, nie stykaja sie.
@@ -598,6 +858,7 @@ if (refreshBtn) {
   }
 
   layout();
+  window.refreshPathMenu = layout;
 
   try {
     if (new URLSearchParams(location.search).get('menu') === '1') {

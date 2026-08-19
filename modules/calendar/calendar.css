@@ -1,11 +1,4 @@
   /* ---------- CALENDAR PANEL ---------- */
-  .cal-month {
-    font-size: clamp(16px, 1.8vw, 22px);
-    font-weight: 700;
-    margin-bottom: 18px;
-    text-transform: capitalize;
-  }
-
   .cal-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -29,12 +22,12 @@
     align-items: center;
     justify-content: center;
     font-family: 'JetBrains Mono', monospace;
-    font-size: clamp(11px, 1.7vmin, 20px);
+    font-size: var(--cal-day-size, clamp(11px, 1.7vmin, 20px));
     color: var(--text);
     border-radius: 10px;
     min-height: 0;
-    max-height: 2.4em;
-    align-self: center;
+    min-width: 0;
+    max-height: 100%;
     overflow: hidden;
     line-height: 1;
   }
@@ -47,23 +40,33 @@
 
   .cal-day.empty { visibility: hidden; }
 
+  .cal-panel[data-density="snug"] .cal-weekday { padding-bottom: 3px; }
+
+  .cal-panel[data-density="compact"] .cal-weekday,
+  .cal-panel[data-density="tight"] .cal-weekday {
+    padding-bottom: 1px;
+    font-size: 9px;
+  }
+  .cal-panel[data-density="compact"] .cal-grid,
+  .cal-panel[data-density="tight"] .cal-grid { gap: 2px; }
+  .cal-panel[data-density="compact"] .cal-day,
+  .cal-panel[data-density="tight"] .cal-day {
+    border-radius: 5px;
+  }
+  .cal-panel[data-density="compact"] .cal-day.today,
+  .cal-panel[data-density="tight"] .cal-day.today { box-shadow: none; }
+
   @media (max-aspect-ratio: 11/10) and (min-width: 640px) and (min-height: 520px) {
     .cal-weekday { padding-bottom: 4px; }
-    .cal-month { margin-bottom: 10px; }
   }
   @media (min-aspect-ratio: 11/10) and (max-width: 959px) and (min-width: 640px) and (min-height: 520px) {
-    .cal-month { margin-bottom: 8px; }
     .cal-weekday { padding-bottom: 2px; }
-    .cal-day { font-size: clamp(10px, 1.8vmin, 14px); }
     .cal-day.today { box-shadow: none; border-radius: 6px; }
   }
   @media (max-width: 639px), (max-height: 519px) {
     .cal-panel { min-height: 280px; }
-    .cal-month { margin-bottom: 10px; }
   }
   @media (min-aspect-ratio: 11/10) and (min-width: 900px) and (max-height: 700px) {
     .cal-panel { padding: var(--panel-pad-y) var(--panel-pad-x); }
-    .cal-panel .panel-label { margin-bottom: 6px; }
-    .cal-month { margin-bottom: 10px; }
   }
 
