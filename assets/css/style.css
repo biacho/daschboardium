@@ -247,7 +247,7 @@
     white-space: nowrap;
   }
 
-  /* Gęstość z JS (data-density) — gdy w kolumnie przybywa kafelków. */
+  /* Gęstość z JS (data-density) — gdy w kolumnie przybywa modułów. */
   .panel[data-density="snug"] {
     padding: var(--panel-pad-y) var(--panel-pad-x);
   }

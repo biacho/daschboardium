@@ -37,7 +37,7 @@ sudo nginx -t && sudo systemctl reload nginx
 | Last.fm | teraz leci / ostatnie scrobble, opcjonalnie follow |
 | TIDAL Player | odtwarzacz na iPadzie (kolekcja + play/pauza/next) |
 
-W landscape: menu → **Edytuj układ** — przeciągasz kafelki między kolumnami (jak ikony na iOS). Gdy kolumna się ściska, zawartość kafelka sama się dopasowuje.
+W landscape: menu → **Edytuj układ** — przeciągasz moduły między kolumnami (jak ikony na iOS). Gdy kolumna się ściska, zawartość modułu sama się dopasowuje.
 
 ## Licencja
 

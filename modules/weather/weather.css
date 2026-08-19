@@ -16,7 +16,7 @@
     padding: 0 .2em;
   }
 
-  /* Kafelek pogody dzieli dolny wiersz z domenami - temperatura musi byc na tyle
+  /* Modul pogody dzieli dolny wiersz z domenami - temperatura musi byc na tyle
      mala, zeby ikona + temperatura + statystyki zmiescily sie bez przyciecia */
   .weather-temp {
     font-family: 'JetBrains Mono', monospace;

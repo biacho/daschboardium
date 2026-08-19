@@ -1,7 +1,7 @@
 <?php
 /**
  * save-layout.php
- * Zapisuje kolejnosc kafelkow w trzech kolumnach. Reszta config.php bez zmian.
+ * Zapisuje kolejnosc modulow w trzech kolumnach. Reszta config.php bez zmian.
  */
 
 require_once dirname(__DIR__) . '/lib/load-config.php';

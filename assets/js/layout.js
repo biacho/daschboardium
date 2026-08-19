@@ -1,6 +1,6 @@
 /* ============== GESTOSC KAFELKOW + EDYCJA SIATKI ============== */
 /* iPad Mini 4 (iOS 15) nie ma container queries — gęstość z ResizeObserver.
-   Tryb edycji jak na pulpicie iOS: chwytasz kafelek i wkładasz w kolumnę.
+   Tryb edycji jak na pulpicie iOS: chwytasz moduł i wkładasz w kolumnę.
    Żywy panel zostaje w slocie (ściska się z sąsiadami), duch idzie za palcem. */
 (function initLayout() {
   const COLS = ['left', 'mid', 'right'];
@@ -20,9 +20,9 @@
     return Array.from(col.querySelectorAll(':scope > .panel[data-panel]')).filter((p) => !p.hidden);
   }
 
-  /* Hug-kafelki sa niskie z zawartosci. Gęstość ma zależeć od miejsca
+  /* Hug-moduły sa niskie z zawartosci. Gęstość ma zależeć od miejsca
      w kolumnie (równy udział), inaczej tight chowa Pomodoro / statystyki
-     i kafelek nigdy nie urosnie. */
+     i moduł nigdy nie urosnie. */
   function densityHeight(panel) {
     const col = panel.parentElement;
     let h = panel.clientHeight;

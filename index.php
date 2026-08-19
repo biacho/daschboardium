@@ -228,7 +228,7 @@ function module($name) {
               <h3 class="config-section-title">Last.fm</h3>
               <label class="config-on"><input type="checkbox" class="cfg-panel" value="lastfm"><span>Aktywny</span></label>
             </div>
-            <p class="config-hint">Klucz z <a href="https://www.last.fm/api/account/create" target="_blank" rel="noopener">last.fm/api</a>. W Apple Music / TIDAL włącz scrobbling — kafelek pokaże, co leci. Obserwowany: lista osób, które followujesz na Last.fm.</p>
+            <p class="config-hint">Klucz z <a href="https://www.last.fm/api/account/create" target="_blank" rel="noopener">last.fm/api</a>. W Apple Music / TIDAL włącz scrobbling — moduł pokaże, co leci. Obserwowany: lista osób, które followujesz na Last.fm.</p>
             <div class="config-grid">
               <label class="config-field">
                 <span>Użytkownik</span>
@@ -259,7 +259,7 @@ function module($name) {
               <button type="button" class="config-btn ghost" id="cfgTidalConnect">Połącz</button>
               <button type="button" class="config-btn ghost" id="cfgTidalDisconnect">Rozłącz</button>
             </div>
-            <p class="config-hint">Aplikacja z <a href="https://developer.tidal.com/" target="_blank" rel="noopener">developer.tidal.com</a>. Kafelek to odtwarzacz na iPadzie (play / pauza / next) — nie steruje telefonem. Redirect URI wklej 1:1. Po zmianie uprawnień kliknij <strong>Połącz</strong> jeszcze raz. OAuth z iPada na HTTP w LAN zwykle nie przejdzie — połącz z maszyny serwera przez <code>127.0.0.1</code>.</p>
+            <p class="config-hint">Aplikacja z <a href="https://developer.tidal.com/" target="_blank" rel="noopener">developer.tidal.com</a>. Moduł to odtwarzacz na iPadzie (play / pauza / next) — nie steruje telefonem. Redirect URI wklej 1:1. Po zmianie uprawnień kliknij <strong>Połącz</strong> jeszcze raz. OAuth z iPada na HTTP w LAN zwykle nie przejdzie — połącz z maszyny serwera przez <code>127.0.0.1</code>.</p>
             <p class="config-hint" id="cfgTidalStatus">Nie połączono.</p>
             <div class="config-grid">
               <label class="config-field">
@@ -312,7 +312,7 @@ function module($name) {
 </div>
 
 <div class="layout-bar" id="layoutBar" hidden>
-  <p>Przesuń kafelki · układ zapisze się sam</p>
+  <p>Przesuń moduły · układ zapisze się sam</p>
   <button type="button" class="config-btn primary" id="layoutDone">Gotowe</button>
 </div>
 

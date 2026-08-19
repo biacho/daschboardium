@@ -1,5 +1,5 @@
   /* ---------- DOMAINS PANEL ---------- */
-  /* Kafelek jest ciasny, wiec: mniejszy padding, minimalny odstep pod tytulem
+  /* Modul jest ciasny, wiec: mniejszy padding, minimalny odstep pod tytulem
      i waznosc domeny w nawiasie przy nazwie zamiast osobnej plakietki */
   .domains-panel { padding: var(--panel-pad-y) var(--panel-pad-x); }
   .domains-panel .panel-label { margin-bottom: 8px; }
